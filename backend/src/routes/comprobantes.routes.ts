@@ -2,6 +2,25 @@ import { Router, Request, Response } from 'express';
 import { PrismaClient as PrismaTenant } from '@prisma/client-tenant';
 import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
 import { LedgerService } from '../services/contabilidad/ledger.service';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+
+// Configure Multer for Documento Soporte
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, '../../uploads/DocumentoSoporte');
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname);
+  }
+});
+const upload = multer({ storage });
 
 const router = Router();
 const prismaGlobal = new PrismaGlobal();
@@ -30,9 +49,9 @@ router.get('/:tenantId/comprobantes', async (req: any, res: any) => {
 });
 
 // POST /api/contabilidad/:tenantId/comprobantes
-router.post('/:tenantId/comprobantes', async (req: Request, res: Response) => {
+router.post('/:tenantId/comprobantes', upload.array('soportes', 10), async (req: Request, res: Response) => {
   const { tenantId } = req.params;
-  const data = req.body;
+  const data = req.body.data ? JSON.parse(req.body.data) : req.body;
   let pTenant;
 
   try {
@@ -157,6 +176,24 @@ router.post('/:tenantId/comprobantes', async (req: Request, res: Response) => {
           detalles: `Documento ${numeracion.prefijo}${consecutiveToUse} contabilizado por ${totalDebito}`
         }
       });
+
+      // 5. Documentos Soporte (Múltiples)
+      if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+        const docSoportes = [];
+        for (const file of req.files) {
+          const doc = await tx.documentoSoporte.create({
+            data: {
+              comprobanteId: comprobante.id,
+              nombreOriginal: file.originalname,
+              rutaArchivo: `uploads/DocumentoSoporte/${file.filename}`,
+              mimeType: file.mimetype,
+              tamano: file.size
+            }
+          });
+          docSoportes.push(doc);
+        }
+        (comprobante as any).documentosSoporte = docSoportes;
+      }
 
       return { comprobante, numero: consecutiveToUse, prefijo: numeracion.prefijo, warning: warningMessage };
     });

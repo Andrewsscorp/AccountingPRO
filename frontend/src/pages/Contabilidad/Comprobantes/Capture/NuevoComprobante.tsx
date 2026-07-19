@@ -9,6 +9,9 @@ import EncabezadoForm from './EncabezadoForm';
 import DetalleGrid from './DetalleGrid';
 import TotalesAnexos from './TotalesAnexos';
 import PostSaveModal from '../../../../components/contabilidad/PostSaveModal';
+import GuardarBorradorModal from '../../../../components/contabilidad/GuardarBorradorModal';
+import LibreriaComprobantesModal from '../../../../components/contabilidad/LibreriaComprobantesModal';
+import { IconFolderOpen, IconBookmarkPlus } from '@tabler/icons-react';
 
 type RowData = {
   id: string;
@@ -34,6 +37,11 @@ export default function NuevoComprobante() {
   const [postSaveModalOpen, setPostSaveModalOpen] = useState(false);
   const [lastSavedComprobante, setLastSavedComprobante] = useState<any>(null);
 
+  // Modales Libreria
+  const [libreriaModalOpen, setLibreriaModalOpen] = useState(false);
+  const [borradorModalOpen, setBorradorModalOpen] = useState(false);
+  const [savingBorrador, setSavingBorrador] = useState(false);
+
   const [encabezado, setEncabezado] = useState({
     tipoDocumentoId: null,
     numero: '',
@@ -48,6 +56,7 @@ export default function NuevoComprobante() {
   ]);
 
   const [comentarios, setComentarios] = useState('');
+  const [soporteFiles, setSoporteFiles] = useState<File[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -112,11 +121,16 @@ export default function NuevoComprobante() {
     const payload = { encabezado, movimientos: validRows };
     const tenantId = localStorage.getItem('activeTenantId') || 'EMP000001';
 
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(payload));
+    if (soporteFiles && soporteFiles.length > 0) {
+      soporteFiles.forEach(f => formData.append('soportes', f));
+    }
+
     try {
       const res = await fetch(`http://localhost:3000/api/contabilidad/${tenantId}/comprobantes`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: formData
       });
       const data = await res.json();
       if (data.success) {
@@ -141,6 +155,7 @@ export default function NuevoComprobante() {
           ...encabezado,
           numero: docNumber,
           comentarios: comentarios,
+          documentosSoporte: data.data.comprobante?.documentosSoporte || [],
           movimientos: validRows.map(m => {
             const cta = planCuentas.find(c => c.id.toString() === m.cuentaId?.toString());
             const ter = terceros.find(t => t.id.toString() === m.terceroId?.toString());
@@ -149,7 +164,18 @@ export default function NuevoComprobante() {
           })
         });
 
-        // Open Modal
+        // Clear inputs after successful save
+        setEncabezado({
+          tipoDocumentoId: encabezado.tipoDocumentoId, // Keep document type selected
+          numero: '',
+          fecha: new Date(),
+          afecta: 'CONTABLE_TRIBUTARIA',
+          concepto: '',
+          referencia: ''
+        });
+        setRows([{ id: '1', cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '' }]);
+        setComentarios('');
+        setSoporteFiles([]);
         setPostSaveModalOpen(true);
 
       } else {
@@ -214,7 +240,12 @@ export default function NuevoComprobante() {
           </Group>
 
           <Group gap="sm">
-            <Button variant="outline" color="violet" leftSection={<IconDeviceFloppy size={18} />}>Guardar Borrador</Button>
+            <Button variant="light" color="indigo" leftSection={<IconFolderOpen size={18} />} onClick={() => setLibreriaModalOpen(true)}>
+              Cargar desde Librería
+            </Button>
+            <Button variant="outline" color="violet" leftSection={<IconBookmarkPlus size={18} />} onClick={() => setBorradorModalOpen(true)}>
+              Guardar Borrador
+            </Button>
             <Button color="violet" leftSection={<IconDeviceFloppy size={18} />} onClick={handleGuardar} disabled={!isHeaderValid || Math.abs(diferencia) > 0.01}>Guardar</Button>
             <Button variant="light" color="red" onClick={() => navigate('/contabilidad/comprobantes')} leftSection={<IconBan size={18} />}>Cancelar</Button>
           </Group>
@@ -245,6 +276,8 @@ export default function NuevoComprobante() {
             diferencia={diferencia}
             comentarios={comentarios}
             setComentarios={setComentarios}
+            soporteFiles={soporteFiles}
+            setSoporteFiles={setSoporteFiles}
           />
         </Box>
       </Box>
@@ -255,6 +288,79 @@ export default function NuevoComprobante() {
         onClose={handleCloseModal}
         comprobante={lastSavedComprobante}
         empresa={empresa}
+      />
+
+      <LibreriaComprobantesModal
+        opened={libreriaModalOpen}
+        onClose={() => setLibreriaModalOpen(false)}
+        onSelect={(plantilla) => {
+          setEncabezado({
+            tipoDocumentoId: plantilla.tipoDocumentoId ? plantilla.tipoDocumentoId.toString() : null,
+            numero: '',
+            fecha: plantilla.fecha ? new Date(plantilla.fecha) : new Date(),
+            afecta: plantilla.afecta || 'CONTABLE_TRIBUTARIA',
+            concepto: plantilla.concepto || '',
+            referencia: plantilla.referencia || ''
+          });
+          setComentarios(plantilla.comentarios || '');
+          const mappedRows = plantilla.movimientos.map((m: any) => ({
+            id: Math.random().toString(36).substr(2, 9),
+            cuentaId: m.cuentaId ? m.cuentaId.toString() : null,
+            cuentaRef: m.cuenta,
+            terceroId: m.terceroId ? m.terceroId.toString() : null,
+            terceroRef: m.tercero,
+            centroCostoId: m.centroCostoId ? m.centroCostoId.toString() : null,
+            centroCostoRef: m.centroCosto,
+            debito: m.debito || '',
+            credito: m.credito || '',
+            observacion: m.descripcion || ''
+          }));
+          
+          if(mappedRows.length === 0) {
+            setRows([
+              { id: '1', cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '' },
+              { id: '2', cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '' }
+            ]);
+          } else {
+            setRows(mappedRows);
+          }
+          setLibreriaModalOpen(false);
+          notifications.show({ title: 'Plantilla Cargada', message: 'Los datos de la plantilla se han cargado en pantalla.', color: 'blue' });
+        }}
+      />
+
+      <GuardarBorradorModal
+        opened={borradorModalOpen}
+        onClose={() => setBorradorModalOpen(false)}
+        loading={savingBorrador}
+        onConfirm={async (nombrePlantilla) => {
+          setSavingBorrador(true);
+          const tenantId = localStorage.getItem('activeTenantId') || 'EMP000001';
+          const payload = { 
+            nombrePlantilla,
+            encabezado: { ...encabezado, comentarios }, 
+            movimientos: rows.filter(r => r.cuentaId || r.debito || r.credito) 
+          };
+          
+          try {
+            const res = await fetch(`http://localhost:3000/api/contabilidad/${tenantId}/doc-libreria`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if(data.success) {
+              notifications.show({ title: 'Borrador Guardado', message: 'La plantilla se guardó correctamente en la librería.', color: 'green', icon: <IconCheck size={16} /> });
+              setBorradorModalOpen(false);
+            } else {
+              notifications.show({ title: 'Error', message: data.message || 'Error guardando borrador', color: 'red' });
+            }
+          } catch(err) {
+            notifications.show({ title: 'Error', message: 'Error de red guardando borrador', color: 'red' });
+          } finally {
+            setSavingBorrador(false);
+          }
+        }}
       />
     </TenantLayout>
   );

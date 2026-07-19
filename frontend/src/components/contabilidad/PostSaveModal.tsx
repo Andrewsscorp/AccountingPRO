@@ -15,24 +15,36 @@ export default function PostSaveModal({ opened, onClose, comprobante, empresa }:
 
   useEffect(() => {
     if (opened && comprobante) {
-      generarPdfComprobante(empresa, comprobante).then((doc) => {
-        setPdfBlob(doc.output('bloburl'));
+      generarPdfComprobante(empresa, comprobante).then((blob) => {
+        setPdfBlob(URL.createObjectURL(blob));
       });
     }
   }, [opened, comprobante, empresa]);
 
   const handlePrint = () => {
     if (!comprobante) return;
-    generarPdfComprobante(empresa, comprobante).then((doc) => {
-      doc.autoPrint();
-      window.open(doc.output('bloburl'), '_blank');
+    generarPdfComprobante(empresa, comprobante).then((blob) => {
+      const url = URL.createObjectURL(blob);
+      const printWindow = window.open(url, '_blank');
+      if (printWindow) {
+        printWindow.onload = () => {
+          printWindow.print();
+        };
+      }
     });
   };
 
   const handleDownload = () => {
     if (!comprobante) return;
-    generarPdfComprobante(empresa, comprobante).then((doc) => {
-      doc.save(`Comprobante_${comprobante.numero}.pdf`);
+    generarPdfComprobante(empresa, comprobante).then((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Comprobante_${comprobante.numero}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     });
   };
 

@@ -1,13 +1,14 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import dayjs from 'dayjs';
+import { PDFDocument } from 'pdf-lib';
 
 const formatCurrency = (val: number) => {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(val);
 };
 
 // Helper function to load an image from URL and convert to Base64 so jsPDF can use it
-const getBase64ImageFromUrl = async (imageUrl: string): Promise<string> => {
+const getBase64ImageFromUrl = async (imageUrl: string): Promise<{ dataUrl: string, width: number, height: number }> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = 'Anonymous'; // Handle CORS if the image is from an external source
@@ -20,7 +21,7 @@ const getBase64ImageFromUrl = async (imageUrl: string): Promise<string> => {
         ctx.drawImage(img, 0, 0);
         // Assuming JPEG or PNG, toDataURL determines the format
         const dataURL = canvas.toDataURL('image/png');
-        resolve(dataURL);
+        resolve({ dataUrl: dataURL, width: img.width, height: img.height });
       } else {
         reject(new Error('Failed to get canvas context'));
       }
@@ -43,9 +44,9 @@ export const generarPdfComprobante = async (empresa: any, comprobante: any) => {
     try {
       // Build full URL for logo
       const fullLogoUrl = empresa.logoUrl.startsWith('http') ? empresa.logoUrl : `http://localhost:3000${empresa.logoUrl}`;
-      const logoBase64 = await getBase64ImageFromUrl(fullLogoUrl);
+      const imgRes = await getBase64ImageFromUrl(fullLogoUrl);
       // Parameters: base64, format, x, y, width, height. Width/Height hardcoded to 50x50 approx.
-      doc.addImage(logoBase64, 'PNG', 40, 30, 50, 50);
+      doc.addImage(imgRes.dataUrl, 'PNG', 40, 30, 50, 50);
       startHeaderY = 100; // Move text down if logo exists
     } catch (e) {
       console.warn("No se pudo cargar el logo de la empresa para el PDF", e);
@@ -180,5 +181,70 @@ export const generarPdfComprobante = async (empresa: any, comprobante: any) => {
     doc.text('Aprobado por', 470, lineY + 15, { align: 'center' });
   }
   
-  return doc;
+  // Anexar Documentos Soporte si existen
+  if (comprobante.documentosSoporte && comprobante.documentosSoporte.length > 0) {
+    let mainPdfBytes: Uint8Array | null = null;
+    let currentJsPdfBlob = doc.output('arraybuffer');
+
+    // Inicializamos el documento base con pdf-lib (que contiene la tabla generada por jsPDF)
+    let mainPdfDoc = await PDFDocument.load(currentJsPdfBlob);
+
+    for (const docSoporte of comprobante.documentosSoporte) {
+      const fileUrl = `http://localhost:3000/${docSoporte.rutaArchivo.replace(/\\/g, '/')}`;
+      
+      try {
+        const resp = await fetch(fileUrl);
+        if (!resp.ok) {
+          console.error(`Fallo al obtener el anexo: ${fileUrl} (Status: ${resp.status})`);
+          continue;
+        }
+        
+        const fileBuffer = await resp.arrayBuffer();
+
+        if (docSoporte.mimeType === 'application/pdf') {
+          const attachmentPdfDoc = await PDFDocument.load(fileBuffer);
+          const copiedPages = await mainPdfDoc.copyPages(attachmentPdfDoc, attachmentPdfDoc.getPageIndices());
+          copiedPages.forEach((page) => {
+            mainPdfDoc.addPage(page);
+          });
+        } else if (docSoporte.mimeType.startsWith('image/')) {
+          // Para imágenes, creamos una página nueva en pdf-lib
+          // Nota: ya no usamos jsPDF porque el documento base ahora está en pdf-lib
+          const image = docSoporte.mimeType === 'image/png' 
+            ? await mainPdfDoc.embedPng(fileBuffer)
+            : await mainPdfDoc.embedJpg(fileBuffer);
+
+          const { width, height } = image.scale(1);
+          const page = mainPdfDoc.addPage();
+          const { width: pageWidth, height: pageHeight } = page.getSize();
+          
+          const maxWidth = pageWidth - 80;
+          const maxHeight = pageHeight - 80;
+          
+          let w = width;
+          let h = height;
+          
+          if (w > maxWidth || h > maxHeight) {
+            const ratio = Math.min(maxWidth / w, maxHeight / h);
+            w = w * ratio;
+            h = h * ratio;
+          }
+          
+          page.drawImage(image, {
+            x: 40,
+            y: pageHeight - h - 40, // pdf-lib y-axis starts from bottom
+            width: w,
+            height: h
+          });
+        }
+      } catch (e) {
+        console.error(`Error al procesar el anexo ${docSoporte.nombreOriginal}:`, e);
+      }
+    }
+    
+    const mergedPdfBytes = await mainPdfDoc.save();
+    return new Blob([mergedPdfBytes], { type: 'application/pdf' });
+  }
+
+  return doc.output('blob');
 };

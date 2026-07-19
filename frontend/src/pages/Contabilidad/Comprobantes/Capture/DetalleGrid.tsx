@@ -96,6 +96,11 @@ export default function DetalleGrid({ rows, onChange, planCuentas, terceros, cen
       credito: '', 
       observacion: lastObs || conceptoGlobal || ''
     }]);
+
+    // Focus the newly added "Cuenta" select after React renders
+    setTimeout(() => {
+      document.getElementById(`cuenta-select-${rows.length}`)?.focus();
+    }, 50);
   };
 
   const cuentasData = planCuentas.map(c => ({ value: c.id.toString(), label: `${c.codigo} - ${c.nombre}` }));
@@ -132,6 +137,7 @@ export default function DetalleGrid({ rows, onChange, planCuentas, terceros, cen
               <Table.Td><Text size="sm" fw={600} c="dimmed">{index + 1}</Text></Table.Td>
               <Table.Td>
                 <Select
+                  id={`cuenta-select-${index}`}
                   placeholder="Buscar cuenta"
                   data={cuentasData}
                   value={row.cuentaId}

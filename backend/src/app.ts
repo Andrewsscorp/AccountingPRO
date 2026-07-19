@@ -19,6 +19,10 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Rutas
 app.use('/api/empresas', empresasRoutes);
 app.use('/api/contabilidad', contabilidadRoutes);
+import docLibreriaRoutes from './routes/docLibreria.routes';
+app.use('/api/contabilidad', docLibreriaRoutes);
+import comprobantesRoutes from './routes/comprobantes.routes';
+app.use('/api/contabilidad', comprobantesRoutes);
 app.use('/api/configuracion/firmantes', firmantesRoutes);
 app.use('/api/configuracion/empresa', configuracionEmpresaRoutes);
 app.use('/api/importaciones', importacionesRoutes);
