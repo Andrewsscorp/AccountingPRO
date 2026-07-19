@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Title, Text, Box, Button, Group, Flex, Breadcrumbs, Anchor, Loader, Center } from '@mantine/core';
-import { IconFileInvoice, IconDeviceFloppy, IconBan, IconPrinter, IconChevronDown } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
+import { IconFileInvoice, IconDeviceFloppy, IconBan, IconPrinter, IconChevronDown, IconCheck } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import TenantLayout from '../../../../components/layout/TenantLayout';
 
 import EncabezadoForm from './EncabezadoForm';
 import DetalleGrid from './DetalleGrid';
 import TotalesAnexos from './TotalesAnexos';
+import PostSaveModal from '../../../../components/contabilidad/PostSaveModal';
 
 type RowData = {
   id: string;
@@ -27,6 +29,10 @@ export default function NuevoComprobante() {
   const [planCuentas, setPlanCuentas] = useState<any[]>([]);
   const [terceros, setTerceros] = useState<any[]>([]);
   const [centrosCosto, setCentrosCosto] = useState<any[]>([]);
+  
+  const [empresa, setEmpresa] = useState<any>(null);
+  const [postSaveModalOpen, setPostSaveModalOpen] = useState(false);
+  const [lastSavedComprobante, setLastSavedComprobante] = useState<any>(null);
 
   const [encabezado, setEncabezado] = useState({
     tipoDocumentoId: null,
@@ -49,17 +55,22 @@ export default function NuevoComprobante() {
         const tenantId = localStorage.getItem('activeTenantId') || 'EMP000001';
         
         // Fetch all dependencies concurrently
-        const [resTd, resPuc, resTerc, resCc] = await Promise.all([
+        const [resTd, resPuc, resTerc, resCc, resEmp] = await Promise.all([
           fetch(`http://localhost:3000/api/tipos-documento/${tenantId}/tipos-documento`).then(r => r.json()),
           fetch(`http://localhost:3000/api/contabilidad/${tenantId}/plan-cuentas`).then(r => r.json()),
           fetch(`http://localhost:3000/api/terceros/${tenantId}/terceros`).then(r => r.json()),
-          fetch(`http://localhost:3000/api/centros-costo/${tenantId}/centros-costo`).then(r => r.json())
+          fetch(`http://localhost:3000/api/centros-costo/${tenantId}/centros-costo`).then(r => r.json()),
+          fetch(`http://localhost:3000/api/empresas`).then(r => r.json())
         ]);
 
         if (resTd.success) setTiposDocumento(resTd.data);
         if (resPuc.success) setPlanCuentas(resPuc.data.filter((c: any) => c.movimiento)); // Solo cuentas de movimiento
         if (resTerc.success) setTerceros(resTerc.data);
         if (resCc.success) setCentrosCosto(resCc.data);
+        if (resEmp.success) {
+          const act = resEmp.data.find((e: any) => e.codigo_empresa === tenantId);
+          setEmpresa(act || resEmp.data[0]);
+        }
 
         setLoading(false);
       } catch (error) {
@@ -84,17 +95,17 @@ export default function NuevoComprobante() {
     const validRows = rows.filter(r => r.cuentaId && (Number(r.debito) > 0 || Number(r.credito) > 0));
     
     if (validRows.length < 2) {
-      alert("Debe incluir al menos dos movimientos válidos");
+      notifications.show({ title: 'Atención', message: "Debe incluir al menos dos movimientos válidos", color: 'orange' });
       return;
     }
     
     if (Math.abs(diferencia) > 0.01) {
-      alert(`El comprobante está descuadrado por ${Math.abs(diferencia)}`);
+      notifications.show({ title: 'Descuadre', message: `El comprobante está descuadrado por ${Math.abs(diferencia)}`, color: 'red' });
       return;
     }
 
     if (!encabezado.tipoDocumentoId || !encabezado.fecha || !encabezado.concepto) {
-      alert("Faltan campos obligatorios en el encabezado");
+      notifications.show({ title: 'Faltan datos', message: "Faltan campos obligatorios en el encabezado", color: 'red' });
       return;
     }
 
@@ -109,36 +120,69 @@ export default function NuevoComprobante() {
       });
       const data = await res.json();
       if (data.success) {
-        alert("Comprobante guardado con éxito: " + data.data.prefijo + data.data.numero);
+        const docNumber = (data.data.prefijo || '') + data.data.numero;
+        notifications.show({
+          title: 'Guardado exitoso',
+          message: `El comprobante ${docNumber} se ha guardado correctamente.`,
+          color: 'green',
+          icon: <IconCheck size={16} />
+        });
         
         if (data.warning) {
-          alert("AVISO AUTOMÁTICO:\n\n" + data.warning);
+          notifications.show({
+            title: 'Aviso Automático',
+            message: data.warning,
+            color: 'blue'
+          });
         }
 
-        // Refresh TiposDocumento to get the updated consecutive number
-        try {
-          const resTd = await fetch(`http://localhost:3000/api/tipos-documento/${tenantId}/tipos-documento`).then(r => r.json());
-          if (resTd.success) setTiposDocumento(resTd.data);
-        } catch (e) {
-          console.error("Error refreshing Tipos Documentos", e);
-        }
-
-        setEncabezado({
-          tipoDocumentoId: null,
-          numero: '',
-          fecha: new Date(),
-          afecta: 'CONTABLE_TRIBUTARIA',
-          concepto: '',
-          referencia: ''
+        // Set Last Saved Comprobante for Modal
+        setLastSavedComprobante({
+          ...encabezado,
+          numero: docNumber,
+          comentarios: comentarios,
+          movimientos: validRows.map(m => {
+            const cta = planCuentas.find(c => c.id.toString() === m.cuentaId?.toString());
+            const ter = terceros.find(t => t.id.toString() === m.terceroId?.toString());
+            const cc = centrosCosto.find(c => c.id.toString() === m.centroCostoId?.toString());
+            return { ...m, cuentaRef: cta, terceroRef: ter, centroCostoRef: cc };
+          })
         });
-        setRows([{ id: Math.random().toString(), cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '' }]);
-        setComentarios('');
+
+        // Open Modal
+        setPostSaveModalOpen(true);
+
       } else {
-        alert("Error al guardar: " + data.message);
+        notifications.show({ title: 'Error al guardar', message: data.message, color: 'red' });
       }
     } catch (error) {
       console.error(error);
-      alert("Error de conexión al servidor");
+      notifications.show({ title: 'Error de conexión', message: "No se pudo conectar con el servidor.", color: 'red' });
+    }
+  };
+
+  const handleCloseModal = async () => {
+    setPostSaveModalOpen(false);
+    
+    // Reset Form
+    setEncabezado({
+      tipoDocumentoId: null,
+      numero: '',
+      fecha: new Date(),
+      afecta: 'CONTABLE_TRIBUTARIA',
+      concepto: '',
+      referencia: ''
+    });
+    setRows([{ id: Math.random().toString(), cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '' }]);
+    setComentarios('');
+
+    // Refresh TiposDocumento
+    const tenantId = localStorage.getItem('activeTenantId') || 'EMP000001';
+    try {
+      const resTd = await fetch(`http://localhost:3000/api/tipos-documento/${tenantId}/tipos-documento`).then(r => r.json());
+      if (resTd.success) setTiposDocumento(resTd.data);
+    } catch (e) {
+      console.error("Error refreshing Tipos Documentos", e);
     }
   };
 
@@ -154,7 +198,7 @@ export default function NuevoComprobante() {
 
   return (
     <TenantLayout>
-      <Box pb="xl">
+      <Box p="md">
         {/* Breadcrumbs */}
         <Breadcrumbs mb="xs" style={{ fontSize: '12px' }}>
           <Anchor href="#" c="dimmed" onClick={(e) => { e.preventDefault(); navigate('/contabilidad'); }}>Contabilidad</Anchor>
@@ -171,9 +215,8 @@ export default function NuevoComprobante() {
 
           <Group gap="sm">
             <Button variant="outline" color="violet" leftSection={<IconDeviceFloppy size={18} />}>Guardar Borrador</Button>
-            <Button color="violet" leftSection={<IconDeviceFloppy size={18} />} onClick={handleGuardar} disabled={!isHeaderValid}>Guardar</Button>
-            <Button variant="light" color="red" leftSection={<IconBan size={18} />}>Anular</Button>
-            <Button variant="default" leftSection={<IconPrinter size={18} />} rightSection={<IconChevronDown size={14} />}>Imprimir</Button>
+            <Button color="violet" leftSection={<IconDeviceFloppy size={18} />} onClick={handleGuardar} disabled={!isHeaderValid || Math.abs(diferencia) > 0.01}>Guardar</Button>
+            <Button variant="light" color="red" onClick={() => navigate('/contabilidad/comprobantes')} leftSection={<IconBan size={18} />}>Cancelar</Button>
           </Group>
         </Flex>
 
@@ -195,36 +238,24 @@ export default function NuevoComprobante() {
           diferencia={diferencia}
         />
 
-        <TotalesAnexos 
-          comentarios={comentarios} 
-          setComentarios={setComentarios} 
-          debitoTotal={debitoTotal} 
-          creditoTotal={creditoTotal} 
-          diferencia={diferencia} 
-        />
-
-        {/* Footer shortcuts */}
-        <Flex mt="xl" justify="space-between" align="center" style={{ borderTop: '1px solid #e9ecef', paddingTop: '16px' }}>
-          <Group gap="xl">
-            <Text size="sm" color="dimmed">Creado por: <b>Auditor Senior</b></Text>
-            <Text size="sm" color="dimmed">Última modificación: <b>-</b></Text>
-          </Group>
-          <Group gap="md">
-            <Text size="xs" fw={600}><Kbd>Enter</Kbd> Nueva línea</Text>
-            <Text size="xs" fw={600}><Kbd>Tab</Kbd> Siguiente campo</Text>
-            <Text size="xs" fw={600}><Kbd>Ctrl</Kbd> + <Kbd>S</Kbd> Guardar</Text>
-          </Group>
-        </Flex>
+        <Box mt="md">
+          <TotalesAnexos 
+            debitoTotal={debitoTotal}
+            creditoTotal={creditoTotal}
+            diferencia={diferencia}
+            comentarios={comentarios}
+            setComentarios={setComentarios}
+          />
+        </Box>
       </Box>
-    </TenantLayout>
-  );
-}
 
-// Helper para Kbd (teclas rápidas)
-function Kbd({ children }: { children: React.ReactNode }) {
-  return (
-    <Box component="span" style={{ backgroundColor: '#f8f9fa', border: '1px solid #e9ecef', borderRadius: '4px', padding: '2px 6px', fontSize: '11px', color: '#495057' }}>
-      {children}
-    </Box>
+      {/* Post Save Modal */}
+      <PostSaveModal
+        opened={postSaveModalOpen}
+        onClose={handleCloseModal}
+        comprobante={lastSavedComprobante}
+        empresa={empresa}
+      />
+    </TenantLayout>
   );
 }

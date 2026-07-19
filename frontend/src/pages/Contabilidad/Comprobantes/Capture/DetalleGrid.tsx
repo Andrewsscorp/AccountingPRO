@@ -25,6 +25,26 @@ interface DetalleGridProps {
 }
 
 export default function DetalleGrid({ rows, onChange, planCuentas, terceros, centrosCosto, disabled, conceptoGlobal, diferencia }: DetalleGridProps) {
+  const prevConceptoRef = React.useRef(conceptoGlobal);
+
+  React.useEffect(() => {
+    if (conceptoGlobal !== prevConceptoRef.current) {
+      let hasChanges = false;
+      const newRows = rows.map(r => {
+        if (!r.observacion || r.observacion === prevConceptoRef.current) {
+          hasChanges = true;
+          return { ...r, observacion: conceptoGlobal || '' };
+        }
+        return r;
+      });
+      
+      prevConceptoRef.current = conceptoGlobal;
+      
+      if (hasChanges) {
+        onChange(newRows);
+      }
+    }
+  }, [conceptoGlobal, rows, onChange]);
 
   const updateRow = (index: number, field: keyof RowData, value: any) => {
     const newRows = [...rows];
@@ -44,12 +64,19 @@ export default function DetalleGrid({ rows, onChange, planCuentas, terceros, cen
     onChange(newRows);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number, field: 'debito' | 'credito') => {
-    if ((e.key === 't' || e.key === 'T') && diferencia && diferencia !== 0) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number, field: 'debito' | 'credito' | 'observacion') => {
+    if ((e.key === 't' || e.key === 'T') && field !== 'observacion' && diferencia && diferencia !== 0) {
       e.preventDefault();
       // Calculate missing amount (if we are in debit and missing debit, or just use absolute diff)
       const diffAbs = Math.abs(diferencia);
       updateRow(index, field, diffAbs);
+    }
+
+    if (e.key === 'Enter') {
+      if (index === rows.length - 1) {
+        e.preventDefault();
+        addRow();
+      }
     }
   };
 
@@ -109,6 +136,7 @@ export default function DetalleGrid({ rows, onChange, planCuentas, terceros, cen
                   data={cuentasData}
                   value={row.cuentaId}
                   onChange={(val) => updateRow(index, 'cuentaId', val)}
+                  onKeyUp={(e: any) => { if (e.key === 'Enter' && index === rows.length - 1) addRow(); }}
                   searchable
                   leftSection={<IconSearch size={14} />}
                 />
@@ -119,6 +147,7 @@ export default function DetalleGrid({ rows, onChange, planCuentas, terceros, cen
                   data={tercerosData}
                   value={row.terceroId}
                   onChange={(val) => updateRow(index, 'terceroId', val)}
+                  onKeyUp={(e: any) => { if (e.key === 'Enter' && index === rows.length - 1) addRow(); }}
                   searchable
                   leftSection={<IconSearch size={14} />}
                   disabled={!row.cuentaRef?.requiereTercero}
@@ -130,6 +159,7 @@ export default function DetalleGrid({ rows, onChange, planCuentas, terceros, cen
                   data={ccData}
                   value={row.centroCostoId}
                   onChange={(val) => updateRow(index, 'centroCostoId', val)}
+                  onKeyUp={(e: any) => { if (e.key === 'Enter' && index === rows.length - 1) addRow(); }}
                   searchable
                   disabled={!row.cuentaRef?.requiereCentroCosto}
                 />
@@ -163,6 +193,7 @@ export default function DetalleGrid({ rows, onChange, planCuentas, terceros, cen
                   placeholder="Descripción de la línea"
                   value={row.observacion}
                   onChange={(e) => updateRow(index, 'observacion', e.target.value)}
+                  onKeyDown={(e: any) => handleKeyDown(e, index, 'observacion')}
                 />
               </Table.Td>
               <Table.Td>
