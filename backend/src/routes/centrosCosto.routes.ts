@@ -128,7 +128,7 @@ router.get('/:tenantId/centros-costo', async (req: any, res: any) => {
     const centros = await pTenant.centroCosto.findMany({
       include: {
         padre: { select: { codigo: true, nombre: true } },
-        _count: { select: { movimientos: true } }
+        _count: { select: { movimientos: true, hijos: true } }
       },
       orderBy: { codigo: 'asc' }
     });

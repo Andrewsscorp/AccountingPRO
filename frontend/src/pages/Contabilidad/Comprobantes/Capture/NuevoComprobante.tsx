@@ -75,7 +75,7 @@ export default function NuevoComprobante() {
         if (resTd.success) setTiposDocumento(resTd.data);
         if (resPuc.success) setPlanCuentas(resPuc.data.filter((c: any) => c.movimiento)); // Solo cuentas de movimiento
         if (resTerc.success) setTerceros(resTerc.data);
-        if (resCc.success) setCentrosCosto(resCc.data);
+        if (resCc.success) setCentrosCosto(resCc.data.filter((c: any) => c.activo && (!c._count || c._count.hijos === 0)));
         if (resEmp.success) {
           const act = resEmp.data.find((e: any) => e.codigo_empresa === tenantId);
           setEmpresa(act || resEmp.data[0]);
@@ -115,6 +115,22 @@ export default function NuevoComprobante() {
 
     if (!encabezado.tipoDocumentoId || !encabezado.fecha || !encabezado.concepto) {
       notifications.show({ title: 'Faltan datos', message: "Faltan campos obligatorios en el encabezado", color: 'red' });
+      return;
+    }
+
+    // Validar terceros
+    const docRequiereTercero = selectedTd?.requiereTercero;
+    const missingTercero = validRows.find(r => (r.cuentaRef?.requiereTercero || docRequiereTercero) && !r.terceroId);
+    if (missingTercero) {
+      notifications.show({ title: 'Tercero Requerido', message: `Debe seleccionar un tercero en la línea con cuenta ${missingTercero.cuentaRef?.codigo || ''}. ${docRequiereTercero ? '(Exigido por el tipo de documento)' : ''}`, color: 'red' });
+      return;
+    }
+
+    // Validar centros de costo
+    const docRequiereCentroCosto = selectedTd?.requiereCentroCosto;
+    const missingCc = validRows.find(r => (r.cuentaRef?.requiereCentroCosto || docRequiereCentroCosto) && !r.centroCostoId);
+    if (missingCc) {
+      notifications.show({ title: 'Centro de Costos Requerido', message: `Debe seleccionar un centro de costos en la línea con cuenta ${missingCc.cuentaRef?.codigo || ''}. ${docRequiereCentroCosto ? '(Exigido por el tipo de documento)' : ''}`, color: 'red' });
       return;
     }
 
@@ -247,7 +263,7 @@ export default function NuevoComprobante() {
               Guardar Borrador
             </Button>
             <Button color="violet" leftSection={<IconDeviceFloppy size={18} />} onClick={handleGuardar} disabled={!isHeaderValid || Math.abs(diferencia) > 0.01}>Guardar</Button>
-            <Button variant="light" color="red" onClick={() => navigate('/contabilidad/comprobantes')} leftSection={<IconBan size={18} />}>Cancelar</Button>
+            <Button variant="light" color="red" onClick={() => navigate('/dashboard')} leftSection={<IconBan size={18} />}>Cancelar</Button>
           </Group>
         </Flex>
 
@@ -267,6 +283,7 @@ export default function NuevoComprobante() {
           disabled={!isHeaderValid}
           conceptoGlobal={encabezado.concepto}
           diferencia={diferencia}
+          selectedTd={selectedTd}
         />
 
         <Box mt="md">
@@ -278,6 +295,8 @@ export default function NuevoComprobante() {
             setComentarios={setComentarios}
             soporteFiles={soporteFiles}
             setSoporteFiles={setSoporteFiles}
+            permiteAnexos={selectedTd?.permiteAnexos}
+            permiteObservaciones={selectedTd?.permiteObservaciones}
           />
         </Box>
       </Box>

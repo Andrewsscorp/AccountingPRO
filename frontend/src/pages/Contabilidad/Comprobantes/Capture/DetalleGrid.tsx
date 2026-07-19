@@ -20,11 +20,15 @@ interface DetalleGridProps {
   terceros: any[];
   centrosCosto: any[];
   disabled?: boolean;
-  conceptoGlobal?: string;
-  diferencia?: number;
+  conceptoGlobal: string;
+  diferencia: number;
+  selectedTd?: any;
 }
 
-export default function DetalleGrid({ rows, onChange, planCuentas, terceros, centrosCosto, disabled, conceptoGlobal, diferencia }: DetalleGridProps) {
+export default function DetalleGrid({ rows, onChange, planCuentas, terceros, centrosCosto, disabled, conceptoGlobal, diferencia, selectedTd }: DetalleGridProps) {
+  const isDocRequiereTercero = selectedTd?.requiereTercero;
+  const isDocRequiereCentroCosto = selectedTd?.requiereCentroCosto;
+  const isDocPermiteObservaciones = selectedTd ? selectedTd.permiteObservaciones : true;
   const prevConceptoRef = React.useRef(conceptoGlobal);
 
   React.useEffect(() => {
@@ -156,7 +160,7 @@ export default function DetalleGrid({ rows, onChange, planCuentas, terceros, cen
                   onKeyUp={(e: any) => { if (e.key === 'Enter' && index === rows.length - 1) addRow(); }}
                   searchable
                   leftSection={<IconSearch size={14} />}
-                  disabled={!row.cuentaRef?.requiereTercero}
+                  disabled={!(row.cuentaRef?.requiereTercero || isDocRequiereTercero)}
                 />
               </Table.Td>
               <Table.Td>
@@ -167,7 +171,7 @@ export default function DetalleGrid({ rows, onChange, planCuentas, terceros, cen
                   onChange={(val) => updateRow(index, 'centroCostoId', val)}
                   onKeyUp={(e: any) => { if (e.key === 'Enter' && index === rows.length - 1) addRow(); }}
                   searchable
-                  disabled={!row.cuentaRef?.requiereCentroCosto}
+                  disabled={!(row.cuentaRef?.requiereCentroCosto || isDocRequiereCentroCosto)}
                 />
               </Table.Td>
               <Table.Td>

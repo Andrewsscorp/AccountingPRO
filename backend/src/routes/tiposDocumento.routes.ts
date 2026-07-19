@@ -150,16 +150,16 @@ router.put('/:tenantId/tipos-documento/:id', async (req, res) => {
 
     // Update process
     const updated = await pTenant.$transaction(async (tx) => {
-      if (numeraciones && numeraciones.length > 0) {
-        const numData = numeraciones[0];
-        if (hasMovements) {
-          if (numData.prefijo !== currentNum.prefijo) {
-            throw new Error('No es posible modificar el prefijo porque existen documentos asociados.');
+        if (numeraciones && numeraciones.length > 0) {
+          const numData = numeraciones[0];
+          if (hasMovements) {
+            if ((numData.prefijo || "") !== (currentNum.prefijo || "")) {
+              throw new Error('No es posible modificar el prefijo porque existen documentos asociados.');
+            }
+            if (numData.longitud < currentNum.longitud) {
+              throw new Error('No puede reducir la longitud porque existen documentos emitidos.');
+            }
           }
-          if (numData.longitud < currentNum.longitud) {
-            throw new Error('No puede reducir la longitud porque existen documentos emitidos.');
-          }
-        }
         
         pushLog('longitudConsecutivo', currentNum?.longitud, numData.longitud);
         pushLog('reinicioAnual', currentNum?.reinicioAnual, numData.reinicioAnual);

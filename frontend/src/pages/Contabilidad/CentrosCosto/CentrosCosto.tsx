@@ -13,7 +13,7 @@ import ConfigurarEstructuraCCModal from '../../../components/contabilidad/Config
 import TenantLayout from '../../../components/layout/TenantLayout';
 import ErrorBoundary from '../../../components/ErrorBoundary';
 
-interface CentroCosto {
+export interface CentroCosto {
   id: number;
   codigo: string;
   nombre: string;
@@ -22,7 +22,7 @@ interface CentroCosto {
   padre?: { codigo: string; nombre: string };
   descripcion: string;
   activo: boolean;
-  _count: { movimientos: number };
+  _count: { movimientos: number; hijos?: number };
 }
 
 export default function CentrosCosto() {
@@ -68,7 +68,7 @@ export default function CentrosCosto() {
   });
 
   const totales = centros.length;
-  const activos = centros.filter(c => c.activo).length;
+  const activos = centros.filter(c => c.activo && (!c._count || c._count.hijos === 0)).length;
   const inactivos = totales - activos;
 
   return (
@@ -144,9 +144,9 @@ export default function CentrosCosto() {
                       <Table.Td>{c.nivel}</Table.Td>
                       <Table.Td>{c.padre ? `${c.padre.codigo} - ${c.padre.nombre}` : '-'}</Table.Td>
                       <Table.Td>
-                        {c.activo 
+                        {(c.activo && (!c._count || c._count.hijos === 0))
                           ? <Badge size="xs" color="green" variant="dot">ACTIVO</Badge> 
-                          : <Badge size="xs" color="red" variant="filled">INACTIVO</Badge>}
+                          : <Badge size="xs" color="red" variant="filled">{(c._count && c._count.hijos && c._count.hijos > 0) ? 'MAYOR (INACTIVO)' : 'INACTIVO'}</Badge>}
                       </Table.Td>
                       <Table.Td>{c._count?.movimientos || 0}</Table.Td>
                       <Table.Td>

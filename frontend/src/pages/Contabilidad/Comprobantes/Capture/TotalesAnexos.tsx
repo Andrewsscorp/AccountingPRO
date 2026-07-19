@@ -11,9 +11,11 @@ interface TotalesProps {
   diferencia: number;
   soporteFiles: File[];
   setSoporteFiles: (files: File[]) => void;
+  permiteAnexos?: boolean;
+  permiteObservaciones?: boolean;
 }
 
-export default function TotalesAnexos({ comentarios, setComentarios, debitoTotal, creditoTotal, diferencia, soporteFiles, setSoporteFiles }: TotalesProps) {
+export default function TotalesAnexos({ comentarios, setComentarios, debitoTotal, creditoTotal, diferencia, soporteFiles, setSoporteFiles, permiteAnexos = true, permiteObservaciones = true }: TotalesProps) {
   
   const isBalanced = diferencia === 0 && debitoTotal > 0;
 
@@ -23,11 +25,12 @@ export default function TotalesAnexos({ comentarios, setComentarios, debitoTotal
         <Box p="md" style={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #f1f3f5', height: '100%' }}>
           <Text size="sm" fw={600} mb="xs">Comentarios adicionales</Text>
           <Textarea
-            placeholder="Escribe un comentario (opcional)..."
+            placeholder={permiteObservaciones ? "Escribe un comentario (opcional)..." : "Comentarios deshabilitados para este documento"}
             minRows={4}
             value={comentarios}
             onChange={(e) => setComentarios(e.currentTarget.value)}
             styles={{ input: { backgroundColor: '#f8f9fa', border: 'none' } }}
+            disabled={!permiteObservaciones}
           />
         </Box>
       </Grid.Col>
@@ -60,32 +63,36 @@ export default function TotalesAnexos({ comentarios, setComentarios, debitoTotal
                     <Text size="xs" color="dimmed">{(file.size / 1024 / 1024).toFixed(2)} MB</Text>
                   </Box>
                 </Group>
-                <ThemeIcon 
-                  size={24} 
-                  variant="subtle" 
-                  color="red" 
-                  radius="xl" 
-                  style={{ cursor: 'pointer' }} 
-                  onClick={() => setSoporteFiles(soporteFiles.filter((_, i) => i !== idx))}
-                >
-                  <IconX size={14} />
-                </ThemeIcon>
+                {permiteAnexos && (
+                  <ThemeIcon 
+                    size={24} 
+                    variant="subtle" 
+                    color="red" 
+                    radius="xl" 
+                    style={{ cursor: 'pointer' }} 
+                    onClick={() => setSoporteFiles(soporteFiles.filter((_, i) => i !== idx))}
+                  >
+                    <IconX size={14} />
+                  </ThemeIcon>
+                )}
               </Box>
             ))}
           </Box>
 
           <Dropzone
             onDrop={(files) => setSoporteFiles([...soporteFiles, ...files])}
-            onReject={() => console.log('File rejected')}
-            maxSize={10 * 1024 ** 2}
-            accept={['application/pdf', 'image/png', 'image/jpeg']}
-            style={{
-              height: soporteFiles.length > 0 ? '60px' : 'calc(100% - 24px)',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: soporteFiles.length > 0 ? '0' : undefined
+            maxSize={5 * 1024 ** 2}
+            accept={['image/png', 'image/jpeg', 'application/pdf', 'application/xml', 'text/xml']}
+            styles={{
+              root: {
+                padding: '16px',
+                border: '2px dashed #ced4da',
+                backgroundColor: permiteAnexos ? '#f8f9fa' : '#e9ecef',
+                cursor: permiteAnexos ? 'pointer' : 'not-allowed',
+                opacity: permiteAnexos ? 1 : 0.6
+              }
             }}
+            disabled={!permiteAnexos}
           >
             <Group gap="md" style={{ pointerEvents: 'none' }}>
               <ThemeIcon size={soporteFiles.length > 0 ? 24 : 40} variant="outline" color="violet" radius="md">

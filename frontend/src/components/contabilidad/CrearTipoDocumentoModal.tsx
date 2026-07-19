@@ -14,6 +14,8 @@ export default function CrearTipoDocumentoModal({ opened, onClose, tenantId, onS
   const [activeTab, setActiveTab] = useState<string | null>('general');
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [confirmTerceroOpen, setConfirmTerceroOpen] = useState(false);
+  const [confirmCcOpen, setConfirmCcOpen] = useState(false);
 
   // General state
   const [codigo, setCodigo] = useState('');
@@ -191,7 +193,8 @@ export default function CrearTipoDocumentoModal({ opened, onClose, tenantId, onS
   };
 
   return (
-    <Modal opened={opened} onClose={onClose} title={<Text fw={600} size="lg">{tipoId ? 'Modificar' : 'Nuevo'} Tipo de Documento</Text>} size="xl" centered>
+    <>
+      <Modal opened={opened} onClose={onClose} title={<Text fw={600} size="lg">{tipoId ? 'Modificar' : 'Nuevo'} Tipo de Documento</Text>} size="xl" centered>
       <Tabs value={activeTab} onChange={setActiveTab} color="violet">
         <Tabs.List mb="md">
           <Tabs.Tab value="general">General</Tabs.Tab>
@@ -237,10 +240,51 @@ export default function CrearTipoDocumentoModal({ opened, onClose, tenantId, onS
 
             <Text fw={600} size="sm" c="violet" mt="md">OPCIONES</Text>
             <Grid>
-              <Grid.Col span={6}><Checkbox label="Requiere Tercero" checked={requiereTercero} onChange={(e) => setRequiereTercero(e.currentTarget.checked)} color="violet" /></Grid.Col>
-              <Grid.Col span={6}><Checkbox label="Permitir Anexos" checked={permiteAnexos} onChange={(e) => setPermiteAnexos(e.currentTarget.checked)} color="violet" /></Grid.Col>
-              <Grid.Col span={6}><Checkbox label="Requiere Centro de Costos" checked={requiereCentroCosto} onChange={(e) => setRequiereCentroCosto(e.currentTarget.checked)} color="violet" /></Grid.Col>
-              <Grid.Col span={6}><Checkbox label="Permitir Observaciones" checked={permiteObservaciones} onChange={(e) => setPermiteObservaciones(e.currentTarget.checked)} color="violet" /></Grid.Col>
+              <Grid.Col span={6}>
+                <Checkbox 
+                  label="Requiere Tercero" 
+                  checked={requiereTercero} 
+                  onChange={(e) => {
+                    const isChecked = e.currentTarget.checked;
+                    if (isChecked) {
+                      setConfirmTerceroOpen(true);
+                    } else {
+                      setRequiereTercero(false);
+                    }
+                  }} 
+                  color="violet" 
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <Checkbox 
+                  label="Permitir Anexos" 
+                  checked={permiteAnexos} 
+                  onChange={(e) => setPermiteAnexos(e.currentTarget.checked)} 
+                  color="violet" 
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <Checkbox 
+                  label="Requiere Centro de Costos" 
+                  checked={requiereCentroCosto} 
+                  onChange={(e) => {
+                    if (e.currentTarget.checked) {
+                      setConfirmCcOpen(true);
+                    } else {
+                      setRequiereCentroCosto(false);
+                    }
+                  }} 
+                  color="violet" 
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <Checkbox 
+                  label="Permitir Comentarios Adicionales" 
+                  checked={permiteObservaciones} 
+                  onChange={(e) => setPermiteObservaciones(e.currentTarget.checked)}
+                  color="violet" 
+                />
+              </Grid.Col>
               <Grid.Col span={12}><Switch label="Documento Activo" checked={activo} onChange={(e) => setActivo(e.currentTarget.checked)} color="violet" mt="xs" /></Grid.Col>
             </Grid>
 
@@ -384,10 +428,55 @@ export default function CrearTipoDocumentoModal({ opened, onClose, tenantId, onS
         </Tabs.Panel>
       </Tabs>
 
-      <Group justify="flex-end" mt="xl">
-        <Button variant="default" onClick={onClose}>Cancelar</Button>
-        <Button color="violet" onClick={handleSave} loading={loading || fetching}>Guardar</Button>
-      </Group>
-    </Modal>
+        <Group justify="flex-end" mt="xl">
+          <Button variant="default" onClick={onClose} disabled={loading}>Cancelar</Button>
+          <Button onClick={handleSave} loading={loading} color="violet" disabled={fetching}>Guardar</Button>
+        </Group>
+      </Modal>
+
+      {/* Confirmación Requiere Tercero */}
+      <Modal 
+        opened={confirmTerceroOpen} 
+        onClose={() => setConfirmTerceroOpen(false)} 
+        title={<Text fw={600} size="lg" c="red">¡Atención!</Text>} 
+        centered
+        zIndex={300}
+      >
+        <Text mb="md">
+          Si activa esta opción, el tercero será requerido y validado desde el documento (todas las líneas exigirán tercero), 
+          anulando la configuración individual de la cartilla de cuentas.
+        </Text>
+        <Text mb="xl" fw={500}>¿Desea continuar y activar esta validación global?</Text>
+        <Group justify="flex-end">
+          <Button variant="default" onClick={() => setConfirmTerceroOpen(false)}>Cancelar</Button>
+          <Button color="red" onClick={() => {
+            setRequiereTercero(true);
+            setConfirmTerceroOpen(false);
+          }}>Activar Opción</Button>
+        </Group>
+      </Modal>
+
+      {/* Confirmación Requiere Centro Costo */}
+      <Modal 
+        opened={confirmCcOpen} 
+        onClose={() => setConfirmCcOpen(false)} 
+        title={<Text fw={600} size="lg" c="red">¡Atención!</Text>} 
+        centered
+        zIndex={300}
+      >
+        <Text mb="md">
+          Si activa esta opción, el centro de costos será requerido y validado desde el documento (todas las líneas exigirán centro de costos), 
+          anulando la configuración individual de la cartilla de cuentas.
+        </Text>
+        <Text mb="xl" fw={500}>¿Desea continuar y activar esta validación global?</Text>
+        <Group justify="flex-end">
+          <Button variant="default" onClick={() => setConfirmCcOpen(false)}>Cancelar</Button>
+          <Button color="red" onClick={() => {
+            setRequiereCentroCosto(true);
+            setConfirmCcOpen(false);
+          }}>Activar Opción</Button>
+        </Group>
+      </Modal>
+    </>
   );
 }

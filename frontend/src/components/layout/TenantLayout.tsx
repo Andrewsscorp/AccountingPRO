@@ -54,6 +54,30 @@ export default function TenantLayout({ children }: { children: React.ReactNode }
     return () => clearInterval(timer);
   }, []);
 
+  // Esc key global handler to go back progressively
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        // Prevent navigating back if a modal, menu, or popover is open
+        const hasOverlay = document.querySelector(
+          '.mantine-Modal-root, .mantine-Menu-dropdown, .mantine-Popover-dropdown, .mantine-Select-dropdown, .mantine-DatePicker-dropdown'
+        );
+        if (hasOverlay) return;
+
+        // Prevent navigating back if user is typing in an input
+        const activeElement = document.activeElement;
+        if (activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeElement.tagName)) {
+          return;
+        }
+
+        navigate(-1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
+
   useEffect(() => {
     fetch('http://localhost:3000/api/empresas')
       .then(res => res.json())
