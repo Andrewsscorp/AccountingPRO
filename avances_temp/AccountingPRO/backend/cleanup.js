@@ -1,0 +1,1 @@
+const { PrismaClient } = require('@prisma/client-tenant'); const p = new PrismaClient({ datasources: { db: { url: 'file:./EMP000001_ANDREWTCH.db' } } }); p.comprobante.deleteMany({ where: { numero: 1, concepto: { contains: 'Importaci' } } }).then(res => console.log('Borrados Comprobantes:', res.count)).catch(console.error).finally(() => p.$disconnect());

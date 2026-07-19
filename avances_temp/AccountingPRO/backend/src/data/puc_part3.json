@@ -1,0 +1,1148 @@
+[
+  {
+    "codigo": "51053001",
+    "nombre": "CESANTIAS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "510533",
+    "nombre": "INTERESES SOBRE CESANTIAS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51053301",
+    "nombre": "INTERESES SOBRE CESANTIAS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "510536",
+    "nombre": "PRIMA DE SERVICIOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51053601",
+    "nombre": "PRIMA DE SERVICIOS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "510539",
+    "nombre": "VACACIONES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51053901",
+    "nombre": "VACACIONES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "510548",
+    "nombre": "BONIFICACIONES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51054801",
+    "nombre": "BONIFICACIONES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "510551",
+    "nombre": "DOTACION Y SUMINISTRO A TRABAJADORES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51055101",
+    "nombre": "DOTACION Y SUMINSTRO A TRABAJADORES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "510560",
+    "nombre": "INDEMNIZACION LABORAL",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51056001",
+    "nombre": "INDEMNIZACION LABORAL",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "510563",
+    "nombre": "CAPACITACION AL PERSONAL",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51056301",
+    "nombre": "CAPACITACION AL PERSONAL",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "510568",
+    "nombre": "APORTES ADMINISTRADORA RIESGOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51056801",
+    "nombre": "APORTES ADMINISTRADORA RIESGOS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "510569",
+    "nombre": "APORTES AL I.S.S",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51056901",
+    "nombre": "APORTES A EPS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "510570",
+    "nombre": "APORTES A FONDOS DE PENSIONES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51057001",
+    "nombre": "APORTES A FONDOS DE PENSIONES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "510572",
+    "nombre": "APORTES CAJAS DE COMPENSACION FAMILIAR",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51057201",
+    "nombre": "APORTES CAJAS DE COMPENSACION FAMILIAR",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "510595",
+    "nombre": "OTROS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51059501",
+    "nombre": "OTROS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5110",
+    "nombre": "HONORARIOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "511010",
+    "nombre": "ASESORIA FINANCIERA",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51101001",
+    "nombre": "ASESORIA FINANCIERA - (No declarantes 10%) Persona Natural",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51101002",
+    "nombre": "ASESORIA FINANCIERA - (Declarantes 11%) - Naturales o Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51101003",
+    "nombre": "ASESORIA FINANCIERA - 11% Persona Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "511015",
+    "nombre": "AUDITORIA",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51101501",
+    "nombre": "AUDITORIA EXTERNA - (No declarantes 10%) Persona Natural",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51101502",
+    "nombre": "AUDITORIA EXTERNA - (Declarantes 11%) - Naturales o Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51101503",
+    "nombre": "AUDITORIA EXTERNA - 11% Persona Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "511020",
+    "nombre": "AVALUOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51102001",
+    "nombre": "AVALUOS  - (No declarantes 10%) Persona Natural",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51102002",
+    "nombre": "AVALUOS  - (Declarantes 11%) - Naturales o Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51102003",
+    "nombre": "AVALUOS  - 11% Persona Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "511025",
+    "nombre": "ASESORIA JURIDICA",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51102501",
+    "nombre": "ASESORIA JURIDICA - (No declarantes 10%) Persona Natural",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51102502",
+    "nombre": "ASESORIA JURIDICA - (Declarantes 11%) - Naturales o Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51102503",
+    "nombre": "ASESORIA JURIDICA - 11% Persona Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "511035",
+    "nombre": "ASESORIA TECNICA",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51103501",
+    "nombre": "ASESORIA TECNICA - (No declarantes 10%) Persona Natural",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51103502",
+    "nombre": "ASESORIA TECNICA - (Declarantes 11%) - Naturales o Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51103503",
+    "nombre": "ASESORIA TECNICA - 11% Persona Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "511095",
+    "nombre": "OTROS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51109501",
+    "nombre": "OTROS - (No declarantes 10%) Persona Natural",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51109502",
+    "nombre": "OTROS - (Declarantes 11%) - Naturales o Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51109503",
+    "nombre": "OTROS - 11% Persona Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5115",
+    "nombre": "IMPUESTOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "511515",
+    "nombre": "INDUSTRIAY COMERCIO",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51151501",
+    "nombre": "INDUSTRIA Y COMERCIO - Bogota (ejemplo en el caso que presente ICA en diferenetes ciudades, o puede reemplazar ciudad por %)",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51151501",
+    "nombre": "INDUSTRIA Y COMERCIO - Medellin (ejemplo en el caso que presente ICA en diferenetes ciudades, o puede reemplazar ciudad por %)",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "511570",
+    "nombre": "IVA MAYOR VALOR DEL GASTO",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51157001",
+    "nombre": "IVA MAYOR VALOR DEL GASTO  por ej. Por honorarios",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51157002",
+    "nombre": "IVA MAYOR VALOR DEL GASTO  por ej. Por Arrendamientos",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51157003",
+    "nombre": "IVA MAYOR VALOR DEL GASTO  por ej. (segun el tipo de gastos, por si quieren identificarlos pensando en exogena)",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5120",
+    "nombre": "ARRENDAMIENTOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "512005",
+    "nombre": "BIENES INMUEBLES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51200501",
+    "nombre": "BIENES INMUEBLES/  declarantes y no declarantes Persona Natural",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51200502",
+    "nombre": "BIENES INMUEBLES/  declarantes y no declarantes Persona Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "512010",
+    "nombre": "BIENES MUEBLES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51201001",
+    "nombre": "BIENES MUEBLES/  declarantes y no declarantes Persona Natural",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51201002",
+    "nombre": "BIENES MUEBLES/  declarantes y no declarantes Persona Juridica",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5130",
+    "nombre": "SEGUROS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "513010",
+    "nombre": "DE CUMPLIMINETO",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51301001",
+    "nombre": "DE CUMPLIMINETO",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "513040",
+    "nombre": "FLOTA Y EQUIPO DE TRANSPORTE",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51304001",
+    "nombre": "POLIZA DE SEGUROS VEHICULOS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "513060",
+    "nombre": "RESPONSABILIDAD CIVIL Y EXTRACONTRACTUAL",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51306001",
+    "nombre": "RESPONSABILIDAD CIVIL Y EXTRACONTRACTUAL",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5135",
+    "nombre": "SERVICIOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "513505",
+    "nombre": "ASEO Y VIGILANCIA",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51350501",
+    "nombre": "ASEO Y VIGILANCIA",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "513525",
+    "nombre": "ACUEDUCTO Y ALCANTARILLADO",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51352501",
+    "nombre": "ACUEDUCTO Y ALCANTARILLADO",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "513530",
+    "nombre": "ENERGIA ELECTRICA",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51353001",
+    "nombre": "ENERGIA ELECTRICA",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "513535",
+    "nombre": "TELEFONO - CELULAR",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51353501",
+    "nombre": "TELEFONO",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51353502",
+    "nombre": "CELULAR",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "513536",
+    "nombre": "INTERNET",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51353601",
+    "nombre": "INTERNET",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "513540",
+    "nombre": "CORREO, PORTES Y TELEGRAMAS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51354001",
+    "nombre": "CORREO, PORTES Y TELEGRAMAS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "513550",
+    "nombre": "TRANSPORTE, FLETES Y ACARREOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51355001",
+    "nombre": "TRANSPORTE, FLETES Y ACARREOS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "513595",
+    "nombre": "OTROS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51359501",
+    "nombre": "OTROS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5140",
+    "nombre": "GASTOS LEGALES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "514005",
+    "nombre": "NOTARIALES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51400501",
+    "nombre": "NOTARIALES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "514010",
+    "nombre": "REGISTRO MERCANTIL",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51401001",
+    "nombre": "REGISTRO MERCANTIL",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "514015",
+    "nombre": "CERTIFICADOS DIGITALES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51401501",
+    "nombre": "CERTIFICADOS DIGITALES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "514020",
+    "nombre": "CAMARA COMERCIO",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51402001",
+    "nombre": "CAMARA DE COMERCIO",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "514095",
+    "nombre": "OTROS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "5145",
+    "nombre": "MANTENIMIENTO Y REPARACIONES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "514510",
+    "nombre": "CONSTRUCCIONES Y EDIFICACIONES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51451001",
+    "nombre": "PROPIOS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51451002",
+    "nombre": "ARRENDADOS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "514525",
+    "nombre": "EQUIPO DE COMPUTACION Y COMUNICACION",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51452501",
+    "nombre": "EQUIPO DE COMPUTACION Y COMUNICACION",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "514540",
+    "nombre": "FLOTA Y EQUIPO DE TRANSPORTE",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51454001",
+    "nombre": "VEHICULOS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5150",
+    "nombre": "ADECUACION E INSTALACION",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "515015",
+    "nombre": "REPARACIONES LOCATIVAS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51501501",
+    "nombre": "REPARACIONES LOCATIVAS BIENES INMMUEBLES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5155",
+    "nombre": "GASTOS DE VIAJE",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "515505",
+    "nombre": "ALOJAMIENTO Y MANUTENCION",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51550501",
+    "nombre": "ALOJAMIENTO Y MANUTENCION",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "515515",
+    "nombre": "PASAJES AEREOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51551501",
+    "nombre": "PASAJES AEREOS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "515520",
+    "nombre": "PASAJES TERRESTRES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51552001",
+    "nombre": "PASAJES TERRESTRES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5160",
+    "nombre": "DEPRECIACIONES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "516005",
+    "nombre": "CONSTRUCCIONES Y EDIFICACIONES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51600501",
+    "nombre": "CONSTRUCCIONES Y EDIFICACIONES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "516010",
+    "nombre": "MAQUINARIA Y EQUIPO",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51600501",
+    "nombre": "MAQUINARIA Y EQUIPO",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "516015",
+    "nombre": "EQUIPO DE OFICINA",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51601501",
+    "nombre": "EQUIPO DE OFICINA",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "516020",
+    "nombre": "EQUIPO DE COMPUTACION Y COMUNICACION",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51602002",
+    "nombre": "EQUIPO COMUNICACION",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "516035",
+    "nombre": "FLOTA Y EQUIPO DE TRANSPORTE",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51603501",
+    "nombre": "FLOTA Y EQUIPO DE TRANSPORTE",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5165",
+    "nombre": "AMORTIZACIONES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "516510",
+    "nombre": "INTANGIBLES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51651001",
+    "nombre": "LICENCIAS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5195",
+    "nombre": "DIVERSOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "519505",
+    "nombre": "DIVERSOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "51950501",
+    "nombre": "GASTOS REPRESENTACION",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51950502",
+    "nombre": "GASTOS DE VIAJE",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51950503",
+    "nombre": "ELEMENTOS DE ASEO Y CAFETERIA",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51950504",
+    "nombre": "UTILES, PAPELERIA Y FOTOCOPIAS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51950505",
+    "nombre": "COMBUSTIBLE Y LUBRICANTES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51950506",
+    "nombre": "TAXIS Y BUSES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51950507",
+    "nombre": "CASINO Y RESTAURANTE",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51950508",
+    "nombre": "PARQUEADEROS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51950509",
+    "nombre": "AJUSTE AL PESO",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "51950595",
+    "nombre": "OTROS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "53",
+    "nombre": "NO OPERACIONALES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "5305",
+    "nombre": "FINANCIEROS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "530505",
+    "nombre": "GRAVAMEN A LOS MOVIMIENTOS FINANCIEROS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "53050501",
+    "nombre": "GRAVAMEN A LOS MOVIMIENTOS FINANCIEROS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "530510",
+    "nombre": "GASTOS BANCARIOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "53051001",
+    "nombre": "IVA",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "53051002",
+    "nombre": "COMISIONES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "53051003",
+    "nombre": "INTERESES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "530550",
+    "nombre": "AJUSTE AL PESO",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "53055001",
+    "nombre": "AJUSTE AL PESO",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5315",
+    "nombre": "GASTOS EXTRAORDINARIOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "531515",
+    "nombre": "COSTOS Y GASTOS DE EJERCICIOS ANTERIORES",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "53151501",
+    "nombre": "COSTOS Y GASTOS DE EJERCICIOS ANTERIORES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "531520",
+    "nombre": "IMPUESTOS ASUMIDOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "53152001",
+    "nombre": "RETENCIONES EN LA FUENTE",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "53152002",
+    "nombre": "IVA",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "531595",
+    "nombre": "OTROS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "53159501",
+    "nombre": "OTROS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "5395",
+    "nombre": "GASTOS DIVERSOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "539505",
+    "nombre": "GASTOS ASUMIDOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "53950501",
+    "nombre": "APORTES SEGURIDAD SOCIAL NO DEDUCIBLE",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "53950502",
+    "nombre": "MULTAS, SANCIONES Y LITIGIOS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "53950503",
+    "nombre": "DONACIONES",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "53950504",
+    "nombre": "OTROS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "54",
+    "nombre": "IMPUESTO DE RENTA Y COMPLEMENTARIO",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "5405",
+    "nombre": "IMPUESTO DE RENTA Y COMPLEMENTARIO",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "540505",
+    "nombre": "IMPUESTO DE RENTA Y COMPLEMENTARIO",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "54050501",
+    "nombre": "IMPUESTO DE RENTA Y COMPLEMENTARIOS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "59",
+    "nombre": "GANANCIAS Y PERDIDAS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "5905",
+    "nombre": "GANANCIAS Y PERDIDAS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "590505",
+    "nombre": "GANANCIAS Y PERDIDAS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "59050501",
+    "nombre": "GANANCIAS Y PERDIDAS",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "61",
+    "nombre": "COSTOS DE VENTA",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "6110",
+    "nombre": "COOSTO DE VENTAS Y PRESTACIN DE SERVICIOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "62",
+    "nombre": "COMPRAS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "6205",
+    "nombre": "DE MERCNCIAS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "620505",
+    "nombre": "Nombre Segun la necesidad de la empresa",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "62050501",
+    "nombre": "Nombre Segun la necesidad de la empresa",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "6210",
+    "nombre": "DE MATERIAS PRIMAS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "621005",
+    "nombre": "Nombre Segun la necesidad de la empresa",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "6210501",
+    "nombre": "Nombre Segun la necesidad de la empresa",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "6215",
+    "nombre": "DE MATERIALES INIRECTOS",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "621505",
+    "nombre": "Nombre Segun la necesidad de la empresa",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "62150501",
+    "nombre": "Nombre Segun la necesidad de la empresa",
+    "naturaleza": "D",
+    "acumula": false
+  },
+  {
+    "codigo": "6220",
+    "nombre": "COMPRA DE ENERGIA",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "622005",
+    "nombre": "Nombre Segun la necesidad de la empresa",
+    "naturaleza": "D",
+    "acumula": true
+  },
+  {
+    "codigo": "62200501",
+    "nombre": "Nombre Segun la necesidad de la empresa",
+    "naturaleza": "D",
+    "acumula": true
+  }
+]

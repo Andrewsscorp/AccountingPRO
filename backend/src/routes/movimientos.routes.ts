@@ -1,6 +1,7 @@
 import express from 'express';
 import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
 import { PrismaClient as PrismaTenant } from '@prisma/client-tenant';
+import { LedgerQueryService } from '../services/contabilidad/ledger.query';
 
 const router = express.Router();
 const prismaGlobal = new PrismaGlobal();
@@ -12,6 +13,20 @@ const getTenantPrisma = async (codigoEmpresa: string) => {
   if (!empresa) throw new Error('Empresa no encontrada');
   return new PrismaTenant({ datasources: { db: { url: `file:./${empresa.nombre_bd}.db` } } });
 };
+
+// GET /ledger (Libro Mayor por cursor)
+router.get('/:tenantId/movimientos/ledger', async (req: any, res: any) => {
+  try {
+    const take = parseInt(req.query.take as string) || 20;
+    const cursorId = req.query.cursor ? parseInt(req.query.cursor as string) : undefined;
+    
+    const movimientos = await LedgerQueryService.getLedgerMovements(req.params.tenantId, take, cursorId);
+    res.json({ success: true, data: movimientos });
+  } catch (error: any) {
+    console.error('Error fetching ledger:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 // POST /search
 router.post('/:tenantId/movimientos/search', async (req: any, res: any) => {

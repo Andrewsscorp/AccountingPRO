@@ -1,0 +1,592 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/client-tenant"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("TENANT_DATABASE_URL")
+}
+
+model ConfiguracionPlanCuentas {
+  id                   Int      @id @default(autoincrement())
+  catalogoId           String?
+  nivel1Longitud       Int      @default(1)
+  nivel2Longitud       Int      @default(2)
+  nivel3Longitud       Int      @default(4)
+  nivel4Longitud       Int      @default(6)
+  nivel5Longitud       Int      @default(8)
+  estructuraBloqueada  Boolean  @default(false)
+  fechaCreacion        DateTime @default(now())
+  usuarioCreacion      String?
+}
+
+model ConfiguracionCentrosCosto {
+  id                   Int      @id @default(autoincrement())
+  nivel1Longitud       Int      @default(1)
+  nivel2Longitud       Int      @default(2)
+  nivel3Longitud       Int      @default(4)
+  nivel4Longitud       Int      @default(6)
+  nivel5Longitud       Int      @default(8)
+  estructuraBloqueada  Boolean  @default(false)
+  fechaCreacion        DateTime @default(now())
+  usuarioCreacion      String?
+}
+
+model ConfiguracionEmpresa {
+  id                 Int      @id @default(autoincrement())
+  
+  // Panel 1
+  razonSocial        String
+  nombreComercial    String?
+  nit                String
+  dv                 String
+  tipoPersona        String
+  regimenFiscalP1    String
+  direccion          String
+  ciudad             String
+  departamento       String
+  pais               String
+  telefono           String?
+  email              String?
+  sitioWeb           String?
+  representanteLegal String
+  identificacion     String
+  
+  // Panel 2
+  marcoNormativo     String
+  planCuentas        String
+  moneda             String
+  anioFiscalInicio   DateTime?
+  anioFiscalFin      DateTime?
+  centrosCosto       String
+  presupuesto        String
+  sucursales         String
+  
+  // Panel 3
+  responsabilidades  String // JSON stringified array
+  regimenTributarioP3 String
+  actividadCiiu      String
+  obligadoFacturar   String
+  correoTributario   String
+  correoRecepcion    String
+  manejaReteFuente   String
+  manejaReteIca      String
+
+  // Logo
+  logoUrl            String?
+
+  // Contactos (CFG-EMP-002)
+  direccionCorrespondencia String?
+  codigoPostal             String?
+  telefonoSecundario       String?
+  celularCorporativo       String?
+  fax                      String?
+  emailFacturacion         String?
+  emailNotificaciones      String?
+  facebook                 String?
+  instagram                String?
+  linkedin                 String?
+  xTwitter                 String?
+  youtube                  String?
+  diasAtencion             String?
+  horaApertura             String?
+  horaCierre               String?
+  zonaHoraria              String?
+  observacionesContacto    String?
+  latitud                  Float?
+  longitud                 Float?
+
+  // Tributario (EFTC-006)
+  naturalezaJuridica       String?
+  actividadSecundariaCiiu  String?
+  responsabilidadFiscal    String?
+  granContribuyente        String?
+  agenteRetencionIva       String?
+  autorretenedor           String?
+  resolucionFacturacion    String?
+  fechaResolucion          DateTime?
+  prefijoFacturacion       String?
+  rangoDesde               String?
+  rangoHasta               String?
+  fechaInicioVigencia      DateTime?
+  fechaFinVigencia         DateTime?
+  habilitaNominaElectronica String?
+  codigoDianPrincipal      String?
+  codigoDianSecundario     String?
+  codigoExogena            String?
+  responsabilidadIva       String?
+  responsabilidadRenta     String?
+  tipoContribuyente        String?
+  
+  impuestos                EmpresaImpuesto[]
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model EmpresaImpuesto {
+  id               Int      @id @default(autoincrement())
+  empresaId        Int
+  empresa          ConfiguracionEmpresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  nombre           String
+  codigoDian       String?
+  tarifa           Float
+  aplicaFuente     Boolean  @default(false)
+  aplicaIva        Boolean  @default(false)
+  aplicaIca        Boolean  @default(false)
+  estado           String   @default("Activo")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Tercero {
+  id                 Int      @id @default(autoincrement())
+  tipoIdentificacion String
+  identificacion     String   @unique
+  dv                 String?
+  nombre1            String?
+  nombre2            String?
+  apellido1          String?
+  apellido2          String?
+  razonSocial        String?
+  nombreComercial    String?
+  tipoPersona        String   // "NATURAL" o "JURIDICA"
+  direccion          String?
+  telefono           String?
+  celular            String?
+  email              String?
+  pais               String?
+  departamento       String?
+  ciudad             String?
+  activa             Boolean  @default(true)
+  esEmpresaPrincipal Boolean  @default(false)
+
+  // Información Tributaria
+  actividadCiiu      String?
+  regimenTributario  String?
+  responsabilidadDian String?
+  granContribuyente  Boolean?
+  autorretenedor     Boolean?
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  usuarioCreacion    String?
+
+  movimientos        Movimiento[]
+  roles              TerceroRol[]
+  auditorias         AuditoriaTercero[]
+  firmas             FirmaUsuario[]
+}
+
+model AuditoriaTercero {
+  id                 Int      @id @default(autoincrement())
+  terceroId          Int?
+  tercero            Tercero? @relation(fields: [terceroId], references: [id], onDelete: SetNull)
+  usuarioId          String?
+  accion             String   @default("MODIFICAR")
+  documentoTercero   String?
+  nombreTercero      String?
+  campo              String?
+  valorAnterior      String?
+  valorNuevo         String?
+  fecha              DateTime @default(now())
+  ip                 String?
+  equipo             String?
+}
+
+model TerceroRol {
+  id                 Int      @id @default(autoincrement())
+  terceroId          Int
+  tercero            Tercero  @relation(fields: [terceroId], references: [id], onDelete: Cascade)
+  rol                String   // "CLIENTE", "PROVEEDOR", "EMPLEADO", "SOCIO", "BANCO", "OTRO", etc.
+  @@unique([terceroId, rol])
+}
+
+model PeriodoContable {
+  id          Int      @id @default(autoincrement())
+  anio        Int
+  mes         Int
+  estado      String   // "ABIERTO", "CERRADO"
+  fechaInicio DateTime
+  fechaFin    DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  saldos      SaldoContable[]
+}
+
+model PlanCuenta {
+  id                 Int      @id @default(autoincrement())
+  codigo             String   @unique
+  nombre             String
+  tipo               String   // "ACTIVO", "PASIVO", "PATRIMONIO", "INGRESOS", "GASTOS", "COSTOS"
+  naturaleza         String   // "DEBITO", "CREDITO"
+  nivel              Int
+  cuentaPadreId      String?
+  cuentaPadre        PlanCuenta?  @relation("Jerarquia", fields: [cuentaPadreId], references: [codigo])
+  subCuentas         PlanCuenta[] @relation("Jerarquia")
+  requiereTercero    Boolean  @default(false)
+  requiereCentroCosto Boolean @default(false)
+  movimiento         Boolean  @default(false)
+  activa             Boolean  @default(true)
+  esSistema          Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  movimientos        Movimiento[]
+  saldos             SaldoContable[]
+}
+
+model TipoDocumento {
+  id                    Int      @id @default(autoincrement())
+  codigo                String   @unique
+  nombre                String
+  modulo                String   @default("Contabilidad")
+  clase                 String   @default("Comprobante Contable")
+  descripcion           String?
+  requiereTercero       Boolean  @default(false)
+  requiereCentroCosto   Boolean  @default(false)
+  permiteAnexos         Boolean  @default(false)
+  permiteObservaciones  Boolean  @default(false)
+  esSistema             Boolean  @default(false)
+  activo                Boolean  @default(true)
+  usuarioCreacion       String?
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  numeraciones          Numeracion[]
+  comprobantes          Comprobante[]
+  permisos              TipoDocumentoPermiso[]
+}
+
+model Numeracion {
+  id                 Int      @id @default(autoincrement())
+  tipoDocumentoId    Int
+  tipoDocumento      TipoDocumento @relation(fields: [tipoDocumentoId], references: [id], onDelete: Cascade)
+  prefijo            String?
+  resolucion         String?
+  fechaVencimiento   DateTime?
+  rangoInicial       Int      @default(1)
+  rangoFinal         Int?
+  consecutivoActual  Int      @default(0)
+  longitud           Int      @default(6)
+  rellenoCeros       Boolean  @default(true)
+  automatico         Boolean  @default(true)
+  reinicioAnual      Boolean  @default(false)
+  reinicioMensual    Boolean  @default(false)
+  permiteManual      Boolean  @default(false)
+  activa             Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model AuditoriaConsecutivo {
+  id                Int      @id @default(autoincrement())
+  tipoDocumentoId   Int
+  usuarioId         String
+  valorAnterior     Int?
+  valorNuevo        Int?
+  motivo            String
+  fecha             DateTime @default(now())
+  ip                String?
+  equipo            String?
+}
+
+model Comprobante {
+  id               Int      @id @default(autoincrement())
+  tipoDocumentoId  Int
+  tipoDocumento    TipoDocumento @relation(fields: [tipoDocumentoId], references: [id])
+  numero           Int
+  fecha            DateTime
+  concepto         String
+  estado           String   // "BORRADOR", "ASENTADO", "ANULADO"
+  usuarioCreacion  String?  // Nombre de usuario para auditoría y filtros
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  movimientos      Movimiento[]
+
+  @@unique([tipoDocumentoId, numero])
+}
+
+model Movimiento {
+  id               Int      @id @default(autoincrement())
+  comprobanteId    Int
+  comprobante      Comprobante @relation(fields: [comprobanteId], references: [id], onDelete: Cascade)
+  cuentaId         Int
+  cuenta           PlanCuenta  @relation(fields: [cuentaId], references: [id], onDelete: Restrict)
+  terceroId        Int?
+  tercero          Tercero?    @relation(fields: [terceroId], references: [id], onDelete: Restrict)
+  centroCostoId    Int?
+  centroCosto      CentroCosto? @relation(fields: [centroCostoId], references: [id], onDelete: Restrict)
+  descripcion      String?
+  debito           Float      @default(0)
+  credito          Float      @default(0)
+  baseImpuesto     Float      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model SaldoContable {
+  id               Int      @id @default(autoincrement())
+  periodoId        Int
+  periodo          PeriodoContable @relation(fields: [periodoId], references: [id])
+  cuentaId         Int
+  cuenta           PlanCuenta      @relation(fields: [cuentaId], references: [id])
+  saldoAnterior    Float          @default(0)
+  debitos          Float          @default(0)
+  creditos         Float          @default(0)
+  saldoNuevo       Float          @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@unique([periodoId, cuentaId])
+}
+
+model ParametroContable {
+  id          Int      @id @default(autoincrement())
+  clave       String   @unique
+  valor       String
+  descripcion String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditoriaContable {
+  id          Int      @id @default(autoincrement())
+  fecha       DateTime @default(now())
+  usuario     String
+  equipo      String?
+  ip          String?
+  accion      String
+  resultado   String
+  detalles    String?
+}
+
+model AuditoriaCuenta {
+  id            Int      @id @default(autoincrement())
+  cuentaId      String
+  usuarioId     String
+  accion        String
+  valorAnterior String?
+  valorNuevo    String?
+  fecha         DateTime @default(now())
+  ip            String?
+  equipo        String?
+}
+
+model TipoDocumentoPermiso {
+  id                Int      @id @default(autoincrement())
+  tipoDocumentoId   Int
+  tipoDocumento     TipoDocumento @relation(fields: [tipoDocumentoId], references: [id], onDelete: Cascade)
+  rolId             String
+  crear             Boolean  @default(false)
+  editar            Boolean  @default(false)
+  anular            Boolean  @default(false)
+  consultar         Boolean  @default(true)
+  imprimir          Boolean  @default(false)
+}
+
+model AuditoriaTipoDocumento {
+  id                Int      @id @default(autoincrement())
+  fecha             DateTime @default(now())
+  tipoDocumentoId   Int      @default(0)
+  usuarioId         String   @default("")
+  campo             String   @default("")
+  valorAnterior     String?
+  valorNuevo        String?
+  ip                String?
+  equipo            String?
+}
+
+model AuditoriaPermisoDocumento {
+  id                Int      @id @default(autoincrement())
+  tipoDocumentoId   Int
+  usuarioId         String
+  rolId             String
+  accion            String
+  detalle           String?
+  fecha             DateTime @default(now())
+  ip                String?
+  equipo            String?
+}
+
+// ==========================================
+// MÓDULO: CENTROS DE COSTOS
+// ==========================================
+
+model CentroCosto {
+  id          Int      @id @default(autoincrement())
+  codigo      String   @unique
+  nombre      String
+  padreId     Int?
+  padre       CentroCosto?  @relation("JerarquiaCentros", fields: [padreId], references: [id])
+  hijos       CentroCosto[] @relation("JerarquiaCentros")
+  nivel       Int      @default(1)
+  ruta        String?  // Para almacenar la ruta materializada o código completo, e.g. "001.002.001"
+  descripcion String?
+  activo      Boolean  @default(true)
+  
+  movimientos MovimientoCentroCosto[]
+  presupuestos PresupuestoCentroCosto[]
+  movimientosGenerales Movimiento[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?
+  updatedBy   String?
+}
+
+model MovimientoCentroCosto {
+  id              Int      @id @default(autoincrement())
+  centroCostoId   Int
+  centroCosto     CentroCosto @relation(fields: [centroCostoId], references: [id], onDelete: Cascade)
+  modulo          String
+  tipoDocumento   String
+  documentoId     Int
+  valor           Float
+  fechaMovimiento DateTime
+}
+
+model AuditoriaCentroCosto {
+  id              Int      @id @default(autoincrement())
+  centroCostoId   Int      @default(0)
+  usuarioId       String
+  accion          String
+  campo           String?
+  valorAnterior   String?
+  valorNuevo      String?
+  fecha           DateTime @default(now())
+}
+
+model PresupuestoCentroCosto {
+  id               Int      @id @default(autoincrement())
+  centroCostoId    Int
+  centroCosto      CentroCosto @relation(fields: [centroCostoId], references: [id], onDelete: Cascade)
+  anio             Int
+  mes              Int
+  valorPresupuesto Float    @default(0)
+  valorEjecutado   Float    @default(0)
+
+  @@unique([centroCostoId, anio, mes])
+}
+
+// ==========================================
+// MÓDULO: EXPORTACIÓN PDF Y REPORTES
+// ==========================================
+
+model ReporteTamanoPapel {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  anchoMm     Float
+  altoMm      Float
+  orientacion String   // "Vertical" o "Horizontal"
+
+  @@unique([nombre, orientacion])
+}
+
+model FirmaUsuario {
+  id                     Int       @id @default(autoincrement())
+  usuarioId              String?   // ID del usuario en el sistema Auth (Opcional si es solo un firmante externo)
+  nombre                 String
+  cargo                  String
+  tipoDocumento          String?
+  documento              String?
+  correo                 String?
+  telefono               String?
+  tarjetaProfesional     String?
+  fechaExpedicionTarjeta DateTime?
+  firmaImagen            String?   // Base64
+  selloImagen            String?   // Base64
+  permisosFirma          String?   // JSON con los permisos booleanos
+  fechaVigencia          DateTime?
+  estado                 String    @default("Activo") // Activo, Inactivo
+  
+  terceroId              Int?
+  tercero                Tercero?  @relation(fields: [terceroId], references: [id])
+
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+}
+
+model AuditoriaReporte {
+  id               Int      @id @default(autoincrement())
+  uuid             String   @unique
+  usuarioId        String
+  tipoReporte      String
+  fechaGeneracion  DateTime @default(now())
+  filtros          String   // JSON con la configuración aplicada
+  columnas         String   // JSON con las columnas
+  totalRegistros   Int
+  hash             String   // SHA256 del contenido para evitar alteraciones
+}
+
+model ReporteGenerado {
+  id               Int      @id @default(autoincrement())
+  uuid             String   @unique
+  usuarioId        String
+  tipoReporte      String
+  parametrosJson   String
+  rutaArchivo      String?
+  pesoArchivo      Int?
+  fechaGeneracion  DateTime @default(now())
+}
+
+// ==========================================
+// MÓDULO: IMPORTACIÓN DE MOVIMIENTOS
+// ==========================================
+
+model ImportacionPlantilla {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  mapeoJson   String   // Mapa de columnas de excel a sistema
+  usuario     String
+  fecha       DateTime @default(now())
+}
+
+model ImportacionJob {
+  id              Int      @id @default(autoincrement())
+  archivo         String
+  usuarioId       String
+  fechaInicio     DateTime @default(now())
+  fechaFin        DateTime?
+  estado          String   // PENDIENTE, PROCESANDO, FINALIZADA, FINALIZADA_CON_ERRORES, CANCELADA, FALLIDA
+  totalRegistros  Int      @default(0)
+  procesados      Int      @default(0)
+  errores         Int      @default(0)
+  observaciones   String?
+
+  detalles        ImportacionDetalle[]
+}
+
+model ImportacionDetalle {
+  id              Int      @id @default(autoincrement())
+  importacionId   Int
+  importacion     ImportacionJob @relation(fields: [importacionId], references: [id], onDelete: Cascade)
+  filaExcel       Int
+  fecha           String?
+  documento       String?
+  tipoDocumento   String?
+  cuenta          String?
+  tercero         String?
+  centroCosto     String?
+  concepto        String?
+  debito          Float    @default(0)
+  credito         Float    @default(0)
+  sucursal        String?
+  proyecto        String?
+  observacion     String?
+  
+  estado          String   // VALIDA, CON_ERRORES
+  erroresLista    ImportacionError[]
+}
+
+model ImportacionError {
+  id              Int      @id @default(autoincrement())
+  detalleId       Int
+  detalle         ImportacionDetalle @relation(fields: [detalleId], references: [id], onDelete: Cascade)
+  columna         String
+  mensaje         String
+}

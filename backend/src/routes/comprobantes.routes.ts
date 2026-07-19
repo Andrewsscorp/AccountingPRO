@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient as PrismaTenant } from '@prisma/client-tenant';
 import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
+import { LedgerService } from '../services/contabilidad/ledger.service';
 
 const router = Router();
 const prismaGlobal = new PrismaGlobal();
@@ -56,16 +57,13 @@ router.post('/:tenantId/comprobantes', async (req: Request, res: Response) => {
       }
 
       let totalDebito = 0;
-      let totalCredito = 0;
       for (const m of movimientos) {
         totalDebito += Number(m.debito || 0);
-        totalCredito += Number(m.credito || 0);
         if (!m.cuentaId) throw new Error('Todas las líneas deben tener una cuenta asociada.');
       }
 
-      if (Math.abs(totalDebito - totalCredito) > 0.01) {
-        throw new Error(`El comprobante está descuadrado. Diferencia de: ${Math.abs(totalDebito - totalCredito)}`);
-      }
+      // Validar partida doble usando el nuevo servicio con precisión decimal
+      LedgerService.validateDoubleEntry(movimientos);
 
       const tipoDocId = Number(encabezado.tipoDocumentoId);
       const numeracion = await tx.numeracion.findFirst({

@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/client-global"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("GLOBAL_DATABASE_URL")
+}
+
+model EmpresaGlobal {
+  id             Int      @id @default(autoincrement())
+  codigo_empresa String   @unique
+  nombre_empresa String
+  nit            String
+  servidor_bd    String
+  nombre_bd      String
+  estado         String   @default("ACTIVO")
+  fecha_creacion DateTime @default(now())
+}
+
+model Ciiu {
+  id          Int      @id @default(autoincrement())
+  codigo      String   @unique
+  descripcion String
+  tarifaIca   Float?   // Tarifa ICA referencial (e.g. 9.66)
+  createdAt   DateTime @default(now())
+}
