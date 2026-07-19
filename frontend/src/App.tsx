@@ -13,6 +13,8 @@ import Terceros from './pages/Terceros/Terceros';
 import Configuracion from './pages/Configuracion';
 import AjustesModulo from './pages/Configuracion/Ajustes';
 import DatosEmpresa from './pages/Configuracion/Empresa';
+import CuentasBancarias from './pages/Tesoreria/CuentasBancarias/CuentasBancarias';
+import TesoreriaDashboard from './pages/Tesoreria/TesoreriaDashboard';
 
 export default function App() {
   return (
@@ -29,6 +31,8 @@ export default function App() {
         <Route path="/contabilidad/comprobantes" element={<NuevoComprobante />} />
         <Route path="/contabilidad/importar" element={<ImportarMovimientos />} />
         <Route path="/terceros" element={<Terceros />} />
+        <Route path="/tesoreria" element={<TesoreriaDashboard />} />
+        <Route path="/tesoreria/cuentas-bancarias" element={<CuentasBancarias />} />
         <Route path="/configuracion" element={<Configuracion />} />
         <Route path="/configuracion/ajustes" element={<AjustesModulo />} />
         <Route path="/configuracion/empresa" element={<DatosEmpresa />} />

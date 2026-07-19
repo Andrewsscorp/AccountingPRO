@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, TextInput, ActionIcon, Group, Text, Button, Select, NumberInput } from '@mantine/core';
+import { Table, TextInput, ActionIcon, Group, Text, Button, Select, NumberInput, Modal } from '@mantine/core';
 import { IconTrash, IconPlus, IconSearch } from '@tabler/icons-react';
 
 interface RowData {
@@ -11,6 +11,7 @@ interface RowData {
   debito: number | '';
   credito: number | '';
   observacion: string;
+  cuentaBancariaId?: string | null;
 }
 
 interface DetalleGridProps {
@@ -19,17 +20,24 @@ interface DetalleGridProps {
   planCuentas: any[];
   terceros: any[];
   centrosCosto: any[];
+  cuentasBancarias?: any[];
   disabled?: boolean;
   conceptoGlobal: string;
   diferencia: number;
   selectedTd?: any;
 }
 
-export default function DetalleGrid({ rows, onChange, planCuentas, terceros, centrosCosto, disabled, conceptoGlobal, diferencia, selectedTd }: DetalleGridProps) {
+export default function DetalleGrid({ rows, onChange, planCuentas, terceros, centrosCosto, cuentasBancarias = [], disabled, conceptoGlobal, diferencia, selectedTd }: DetalleGridProps) {
   const isDocRequiereTercero = selectedTd?.requiereTercero;
   const isDocRequiereCentroCosto = selectedTd?.requiereCentroCosto;
   const isDocPermiteObservaciones = selectedTd ? selectedTd.permiteObservaciones : true;
   const prevConceptoRef = React.useRef(conceptoGlobal);
+  
+  const [bancoModal, setBancoModal] = React.useState<{isOpen: boolean, rowIndex: number, list: any[]}>({
+    isOpen: false,
+    rowIndex: -1,
+    list: []
+  });
 
   React.useEffect(() => {
     if (conceptoGlobal !== prevConceptoRef.current) {
@@ -56,7 +64,19 @@ export default function DetalleGrid({ rows, onChange, planCuentas, terceros, cen
     // Si la cuenta cambia, obtenemos la referencia
     if (field === 'cuentaId') {
       const cta = planCuentas.find(c => c.id.toString() === value);
-      newRows[index] = { ...newRows[index], [field]: value, cuentaRef: cta || null };
+      newRows[index] = { ...newRows[index], [field]: value, cuentaRef: cta || null, cuentaBancariaId: null };
+
+      // Revisar si esta cuenta contable pertenece a alguna Cuenta Bancaria
+      if (value) {
+        const matchingCuentasBancarias = cuentasBancarias.filter(cb => cb.cuentaContableId?.toString() === value);
+        if (matchingCuentasBancarias.length === 1) {
+          // Auto assign si solo hay una
+          newRows[index].cuentaBancariaId = matchingCuentasBancarias[0].id.toString();
+        } else if (matchingCuentasBancarias.length > 1) {
+          // Abrir modal de selección de cuenta bancaria
+          setBancoModal({ isOpen: true, rowIndex: index, list: matchingCuentasBancarias });
+        }
+      }
     } else if (field === 'debito' && value > 0) {
       newRows[index] = { ...newRows[index], debito: value, credito: 0 };
     } else if (field === 'credito' && value > 0) {
@@ -96,6 +116,7 @@ export default function DetalleGrid({ rows, onChange, planCuentas, terceros, cen
       cuentaRef: null, 
       terceroId: null, 
       centroCostoId: null, 
+      cuentaBancariaId: null,
       debito: '', 
       credito: '', 
       observacion: lastObs || conceptoGlobal || ''
@@ -222,6 +243,47 @@ export default function DetalleGrid({ rows, onChange, planCuentas, terceros, cen
         </Button>
         <Text size="sm" fw={600} c="dimmed">{rows.length} movimientos</Text>
       </Group>
+
+      {/* Modal para selección de Cuenta Bancaria */}
+      <Modal 
+        opened={bancoModal.isOpen} 
+        onClose={() => setBancoModal({ isOpen: false, rowIndex: -1, list: [] })}
+        title={<Text fw={600} size="lg">Seleccione la Cuenta Bancaria</Text>}
+        centered
+        zIndex={1000}
+      >
+        <Text size="sm" mb="md" c="dimmed">Esta cuenta contable está asociada a tesorería. Elija la cuenta bancaria afectada:</Text>
+        <Select
+          autoFocus
+          defaultDropdownOpened
+          comboboxProps={{ zIndex: 1100 }}
+          data={bancoModal.list.map(cb => ({
+            value: cb.id.toString(),
+            label: `${cb.banco?.nombre || 'Banco'} - ${cb.numeroCuenta}`
+          }))}
+              placeholder="Seleccione cuenta"
+              onChange={(val) => {
+                if (val) {
+                  const newRows = [...rows];
+                  newRows[bancoModal.rowIndex].cuentaBancariaId = val;
+                  onChange(newRows);
+                  setBancoModal({ isOpen: false, rowIndex: -1, list: [] });
+                  
+                  // Retornar foco a la siguiente celda si es posible
+                  setTimeout(() => {
+                    const el = document.getElementById(`cuenta-select-${bancoModal.rowIndex}`);
+                    if (el) el.focus();
+                  }, 50);
+                }
+              }}
+              searchable
+            />
+        <Group justify="flex-end" mt="xl">
+          <Button variant="subtle" color="gray" onClick={() => setBancoModal({ isOpen: false, rowIndex: -1, list: [] })}>
+            Cancelar
+          </Button>
+        </Group>
+      </Modal>
     </div>
   );
 }

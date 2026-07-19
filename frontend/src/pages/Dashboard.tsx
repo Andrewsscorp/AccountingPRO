@@ -38,7 +38,7 @@ import TenantLayout from '../components/layout/TenantLayout';
 
 const modules = [
   { title: 'Contabilidad', desc: 'Comprobantes, movimientos, libros y cierres contables.', icon: IconReceipt2, color: 'violet', path: '/contabilidad' },
-  { title: 'Tesorería', desc: 'Bancos, recibos, egresos y conciliaciones.', icon: IconBuildingBank, color: 'green' },
+  { title: 'Tesorería', desc: 'Bancos, recibos, egresos y conciliaciones.', icon: IconBuildingBank, color: 'green', path: '/tesoreria' },
   { title: 'Terceros', desc: 'Administración e información de terceros.', icon: IconUsers, color: 'blue', path: '/terceros' },
   { title: 'Reportes', desc: 'Estados financieros y reportes gerenciales.', icon: IconChartBar, color: 'orange' },
   { title: 'Cuentas por Cobrar', desc: 'Facturas, abonos, cartera y estados de cuenta.', icon: IconUserDollar, color: 'teal' },

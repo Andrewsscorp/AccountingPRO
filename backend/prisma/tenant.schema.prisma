@@ -239,6 +239,7 @@ model PlanCuenta {
   movimientos           Movimiento[]
   saldos                SaldoContable[]
   DocLibreriaMovimiento DocLibreriaMovimiento[]
+  CuentaBancaria        CuentaBancaria[]
 }
 
 model TipoDocumento {
@@ -325,9 +326,11 @@ model Movimiento {
   cuenta        PlanCuenta   @relation(fields: [cuentaId], references: [id], onDelete: Restrict)
   terceroId     Int?
   tercero       Tercero?     @relation(fields: [terceroId], references: [id], onDelete: Restrict)
-  centroCostoId Int?
-  centroCosto   CentroCosto? @relation(fields: [centroCostoId], references: [id], onDelete: Restrict)
-  descripcion   String?
+  centroCostoId    Int?
+  centroCosto      CentroCosto?    @relation(fields: [centroCostoId], references: [id], onDelete: Restrict)
+  cuentaBancariaId Int?
+  cuentaBancaria   CuentaBancaria? @relation(fields: [cuentaBancariaId], references: [id], onDelete: SetNull)
+  descripcion      String?
   debito        Float        @default(0)
   credito       Float        @default(0)
   baseImpuesto  Float        @default(0)
@@ -645,4 +648,56 @@ model DocumentoSoporte {
   mimeType       String
   tamano         Int
   createdAt      DateTime    @default(now())
+}
+
+model Banco {
+  id     Int     @id @default(autoincrement())
+  codigo String  @unique
+  nombre String
+  activo Boolean @default(true)
+
+  cuentas CuentaBancaria[]
+  sucursales Sucursal[]
+}
+
+model Sucursal {
+  id      Int     @id @default(autoincrement())
+  bancoId Int
+  codigo  String  @unique
+  nombre  String
+  activo  Boolean @default(true)
+
+  banco   Banco   @relation(fields: [bancoId], references: [id])
+  cuentas CuentaBancaria[]
+}
+
+model GrupoOperacion {
+  id     Int     @id @default(autoincrement())
+  codigo String  @unique
+  nombre String
+  activo Boolean @default(true)
+
+  cuentas CuentaBancaria[]
+}
+
+model CuentaBancaria {
+  id                Int      @id @default(autoincrement())
+  bancoId           Int
+  tipo              String
+  numeroCuenta      String   @unique
+  sucursalId        Int
+  cuentaContableId  Int
+  grupoOperacionId  Int?
+  consecutivoCheque String?
+  formatoCheque     String?
+  formatoProveedor  String?
+  activo            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  banco            Banco           @relation(fields: [bancoId], references: [id])
+  sucursal         Sucursal        @relation(fields: [sucursalId], references: [id])
+  cuentaContable   PlanCuenta      @relation(fields: [cuentaContableId], references: [id])
+  grupoOperacion   GrupoOperacion? @relation(fields: [grupoOperacionId], references: [id])
+  movimientos      Movimiento[]
 }

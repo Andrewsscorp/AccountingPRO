@@ -158,6 +158,7 @@ router.post('/:tenantId/comprobantes', upload.array('soportes', 10), async (req:
         cuentaId: Number(m.cuentaId),
         terceroId: m.terceroId ? Number(m.terceroId) : empresaTerceroId,
         centroCostoId: m.centroCostoId ? Number(m.centroCostoId) : null,
+        cuentaBancariaId: m.cuentaBancariaId ? Number(m.cuentaBancariaId) : null,
         descripcion: m.observacion || encabezado.concepto,
         debito: Number(m.debito || 0),
         credito: Number(m.credito || 0)

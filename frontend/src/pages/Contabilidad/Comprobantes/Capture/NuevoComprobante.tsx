@@ -22,6 +22,7 @@ type RowData = {
   debito: number | '';
   credito: number | '';
   observacion: string;
+  cuentaBancariaId?: string | null;
 };
 
 export default function NuevoComprobante() {
@@ -32,6 +33,7 @@ export default function NuevoComprobante() {
   const [planCuentas, setPlanCuentas] = useState<any[]>([]);
   const [terceros, setTerceros] = useState<any[]>([]);
   const [centrosCosto, setCentrosCosto] = useState<any[]>([]);
+  const [cuentasBancarias, setCuentasBancarias] = useState<any[]>([]);
   
   const [empresa, setEmpresa] = useState<any>(null);
   const [postSaveModalOpen, setPostSaveModalOpen] = useState(false);
@@ -52,7 +54,7 @@ export default function NuevoComprobante() {
   });
 
   const [rows, setRows] = useState<RowData[]>([
-    { id: '1', cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '' as number | '', credito: '' as number | '', observacion: '' }
+    { id: '1', cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '' as number | '', credito: '' as number | '', observacion: '', cuentaBancariaId: null }
   ]);
 
   const [comentarios, setComentarios] = useState('');
@@ -64,12 +66,13 @@ export default function NuevoComprobante() {
         const tenantId = localStorage.getItem('activeTenantId') || 'EMP000001';
         
         // Fetch all dependencies concurrently
-        const [resTd, resPuc, resTerc, resCc, resEmp] = await Promise.all([
+        const [resTd, resPuc, resTerc, resCc, resEmp, resBancos] = await Promise.all([
           fetch(`http://localhost:3000/api/tipos-documento/${tenantId}/tipos-documento`).then(r => r.json()),
           fetch(`http://localhost:3000/api/contabilidad/${tenantId}/plan-cuentas`).then(r => r.json()),
           fetch(`http://localhost:3000/api/terceros/${tenantId}/terceros`).then(r => r.json()),
           fetch(`http://localhost:3000/api/centros-costo/${tenantId}/centros-costo`).then(r => r.json()),
-          fetch(`http://localhost:3000/api/empresas`).then(r => r.json())
+          fetch(`http://localhost:3000/api/empresas`).then(r => r.json()),
+          fetch(`http://localhost:3000/api/tesoreria/cuentas-bancarias`, { headers: { 'x-tenant-id': tenantId } }).then(r => r.json())
         ]);
 
         if (resTd.success) setTiposDocumento(resTd.data);
@@ -80,6 +83,7 @@ export default function NuevoComprobante() {
           const act = resEmp.data.find((e: any) => e.codigo_empresa === tenantId);
           setEmpresa(act || resEmp.data[0]);
         }
+        if (resBancos.success) setCuentasBancarias(resBancos.data);
 
         setLoading(false);
       } catch (error) {
@@ -189,7 +193,7 @@ export default function NuevoComprobante() {
           concepto: '',
           referencia: ''
         });
-        setRows([{ id: '1', cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '' }]);
+        setRows([{ id: '1', cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '', cuentaBancariaId: null }]);
         setComentarios('');
         setSoporteFiles([]);
         setPostSaveModalOpen(true);
@@ -215,7 +219,7 @@ export default function NuevoComprobante() {
       concepto: '',
       referencia: ''
     });
-    setRows([{ id: Math.random().toString(), cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '' }]);
+    setRows([{ id: Math.random().toString(), cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '', cuentaBancariaId: null }]);
     setComentarios('');
 
     // Refresh TiposDocumento
@@ -280,6 +284,7 @@ export default function NuevoComprobante() {
           planCuentas={planCuentas} 
           terceros={terceros} 
           centrosCosto={centrosCosto} 
+          cuentasBancarias={cuentasBancarias}
           disabled={!isHeaderValid}
           conceptoGlobal={encabezado.concepto}
           diferencia={diferencia}
@@ -330,6 +335,7 @@ export default function NuevoComprobante() {
             terceroRef: m.tercero,
             centroCostoId: m.centroCostoId ? m.centroCostoId.toString() : null,
             centroCostoRef: m.centroCosto,
+            cuentaBancariaId: m.cuentaBancariaId ? m.cuentaBancariaId.toString() : null,
             debito: m.debito || '',
             credito: m.credito || '',
             observacion: m.descripcion || ''
@@ -337,8 +343,8 @@ export default function NuevoComprobante() {
           
           if(mappedRows.length === 0) {
             setRows([
-              { id: '1', cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '' },
-              { id: '2', cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '' }
+              { id: '1', cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '', cuentaBancariaId: null },
+              { id: '2', cuentaId: null, cuentaRef: null, terceroId: null, centroCostoId: null, debito: '', credito: '', observacion: '', cuentaBancariaId: null }
             ]);
           } else {
             setRows(mappedRows);

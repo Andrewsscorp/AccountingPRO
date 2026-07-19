@@ -36,6 +36,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const navItems = [
   { label: 'Dashboard', path: '/dashboard', icon: IconHome },
   { label: 'Contabilidad', path: '/contabilidad', icon: IconBook2 },
+  { label: 'Tesorería', path: '/tesoreria', icon: IconBuildingBank },
   { label: 'Terceros', path: '/terceros', icon: IconUsers },
   { label: 'Reportes', path: '/reportes', icon: IconFileText },
   { label: 'Configuración', path: '/configuracion', icon: IconSettings }
