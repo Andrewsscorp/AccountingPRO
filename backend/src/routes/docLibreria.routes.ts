@@ -1,10 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient as PrismaTenant } from '@prisma/client-tenant';
 import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
+import { resolveTenant } from "../middlewares/tenant.middleware";
 
 const router = Router();
 const prismaGlobal = new PrismaGlobal();
 
+router.use(resolveTenant);
 
 // GET /api/contabilidad/:tenantId/doc-libreria
 router.get('/:tenantId/doc-libreria', async (req: Request, res: Response) => {

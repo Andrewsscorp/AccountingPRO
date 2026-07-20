@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import { PrismaClient as PrismaTenant } from '@prisma/client-tenant';
 import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
+import { resolveTenant } from "../middlewares/tenant.middleware";
 
 const router = Router();
 const prismaGlobal = new PrismaGlobal();
+router.use(resolveTenant);
 
 // Endpoint de prueba para verificar que el mÃ³dulo contabilidad responde
 router.get('/health', (req, res) => {
