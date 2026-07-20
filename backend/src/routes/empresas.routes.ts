@@ -1,3 +1,4 @@
+import { resolveTenant } from '../middlewares/tenant.middleware';
 import { Router } from 'express';
 import multer from 'multer';
 import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
@@ -9,6 +10,7 @@ import { seedBasePUC } from '../services/pucSeeder';
 
 const execPromise = util.promisify(exec);
 const router = Router();
+router.use(resolveTenant);
 const prismaGlobal = new PrismaGlobal(); // Lee GLOBAL_DATABASE_URL desde .env
 
 // Configuración de Multer para guardar en uploads/

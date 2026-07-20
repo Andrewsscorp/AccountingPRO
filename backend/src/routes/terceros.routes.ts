@@ -5,20 +5,13 @@ import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
 const router = express.Router();
 const prismaGlobal = new PrismaGlobal();
 
-const getTenantPrisma = async (codigoEmpresa: string) => {
-  const empresa = await prismaGlobal.empresaGlobal.findFirst({
-    where: { codigo_empresa: codigoEmpresa }
-  });
-  if (!empresa) throw new Error('Empresa no encontrada');
-  return new PrismaTenant({ datasources: { db: { url: `file:./${empresa.nombre_bd}.db` } } });
-};
 
 // Listar Terceros
 router.get('/:tenantId/terceros', async (req, res) => {
   const { tenantId } = req.params;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     const terceros = await pTenant.tercero.findMany({
       include: {
         roles: true
@@ -46,7 +39,7 @@ router.post('/:tenantId/terceros', async (req, res) => {
   
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     
     // Check duplicity
     const exists = await pTenant.tercero.findUnique({
@@ -83,7 +76,7 @@ router.put('/:tenantId/terceros/:id', async (req, res) => {
   const { roles, ...data } = req.body;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
 
     const exists = await pTenant.tercero.findUnique({ where: { id: Number(id) } });
     if (!exists) {
@@ -180,7 +173,7 @@ router.get('/:tenantId/terceros/:id/dependencias', async (req, res) => {
   const { tenantId, id } = req.params;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     
     const movCount = await pTenant.movimiento.count({ where: { terceroId: Number(id) } });
     const audCount = await pTenant.auditoriaTercero.count({ where: { terceroId: Number(id) } });
@@ -210,7 +203,7 @@ router.delete('/:tenantId/terceros/:id', async (req, res) => {
   const { tenantId, id } = req.params;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     
     const exists = await pTenant.tercero.findUnique({ where: { id: Number(id) } });
     if (!exists) {
@@ -265,7 +258,7 @@ router.patch('/:tenantId/terceros/:id/estado', async (req, res) => {
   const { activa } = req.body;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     
     const exists = await pTenant.tercero.findUnique({ where: { id: Number(id) } });
     if (!exists) {

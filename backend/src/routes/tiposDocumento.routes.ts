@@ -5,20 +5,13 @@ import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
 const router = express.Router();
 const prismaGlobal = new PrismaGlobal();
 
-const getTenantPrisma = async (codigoEmpresa: string) => {
-  const empresa = await prismaGlobal.empresaGlobal.findFirst({
-    where: { codigo_empresa: codigoEmpresa }
-  });
-  if (!empresa) throw new Error('Empresa no encontrada');
-  return new PrismaTenant({ datasources: { db: { url: `file:./${empresa.nombre_bd}.db` } } });
-};
 
 // GET /:tenantId/tipos-documento
 router.get('/:tenantId/tipos-documento', async (req, res) => {
   const { tenantId } = req.params;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     const tipos = await pTenant.tipoDocumento.findMany({
       include: {
         numeraciones: true,
@@ -42,7 +35,7 @@ router.post('/:tenantId/tipos-documento', async (req, res) => {
   const { numeraciones, permisos, ...tipoData } = data;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     
     // Check duplicity
     const exists = await pTenant.tipoDocumento.findUnique({ where: { codigo: tipoData.codigo } });
@@ -100,7 +93,7 @@ router.put('/:tenantId/tipos-documento/:id', async (req, res) => {
   const { numeraciones, permisos, ...tipoData } = req.body;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     
     const existing = await pTenant.tipoDocumento.findUnique({ where: { id: Number(id) } });
     if (!existing) return res.status(404).json({ success: false, message: 'No encontrado' });
@@ -216,7 +209,7 @@ router.get('/:tenantId/tipos-documento/:id/validaciones', async (req, res) => {
   const { tenantId, id } = req.params;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     const existing = await pTenant.tipoDocumento.findUnique({
       where: { id: Number(id) },
       include: {
@@ -260,7 +253,7 @@ router.delete('/:tenantId/tipos-documento/:id', async (req, res) => {
 
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     const existing = await pTenant.tipoDocumento.findUnique({
       where: { id: Number(id) },
       include: {

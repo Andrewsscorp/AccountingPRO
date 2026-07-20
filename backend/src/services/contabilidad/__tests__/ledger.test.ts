@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { LedgerService, InvalidEntryError, UnbalancedTransactionError, MovimientoInput } from '../ledger.service';
 import { LedgerQueryService } from '../ledger.query';
 import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
@@ -20,7 +21,7 @@ jest.mock('@prisma/client-global', () => {
     PrismaClient: jest.fn().mockImplementation(() => {
       return {
         empresaGlobal: {
-          findFirst: jest.fn().mockImplementation(async ({ where }) => {
+          findFirst: jest.fn().mockImplementation(async ({ where }: any) => {
             if (where.codigo_empresa === 'EMP000001') {
                return { id: 1, codigo_empresa: 'EMP000001', nombre_bd: 'dev', servidor_bd: 'localhost', estado: 'ACTIVA' };
             }
@@ -120,7 +121,7 @@ describe('LedgerQueryService - Query Model', () => {
   });
 
   it('Verificar que la consulta se ejecuta sobre la base de datos de la empresa "A" y no lee datos de la empresa "B"', async () => {
-    mockFindMany.mockResolvedValueOnce([
+    mockFindMany.mockReturnValueOnce(Promise.resolve([
       { id: 2, descripcion: 'Movimiento Reciente' },
       { id: 1, descripcion: 'Movimiento Antiguo' }
     ]);
@@ -130,7 +131,7 @@ describe('LedgerQueryService - Query Model', () => {
   });
 
   it('Verificar que la paginación por cursor retorna los registros en el orden cronológico inverso correcto', async () => {
-    mockFindMany.mockResolvedValueOnce([
+    mockFindMany.mockReturnValueOnce(Promise.resolve([
       { id: 1, descripcion: 'Movimiento Antiguo' }
     ]);
     const cursorId = 2;

@@ -6,8 +6,13 @@ import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
 
 const router = Router();
 const prismaGlobal = new PrismaGlobal();
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_key_for_dev_only';
-const REFRESH_SECRET = process.env.REFRESH_SECRET || 'super_secret_refresh_key_for_dev_only';
+const JWT_SECRET = process.env.JWT_SECRET;
+const REFRESH_SECRET = process.env.REFRESH_SECRET;
+
+if (!JWT_SECRET || !REFRESH_SECRET) {
+  console.error("CRITICAL ERROR: JWT_SECRET or REFRESH_SECRET not set in environment variables. Failing to start.");
+  process.exit(1);
+}
 
 // Rate limiting for login
 const loginLimiter = rateLimit({
@@ -52,7 +57,18 @@ router.post('/login', loginLimiter, async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    // Save refresh token in DB if we implement token rotation later, for now just returning it
+    // Save refresh token in DB
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
+
+    await prismaGlobal.refreshToken.create({
+      data: {
+        userId: usuario.id,
+        token: refreshToken,
+        expiresAt: expiresAt
+      }
+    });
+
     res.json({
       success: true,
       token,
@@ -75,6 +91,15 @@ router.post('/refresh', async (req, res) => {
     const { refreshToken } = req.body;
     if (!refreshToken) {
       return res.status(401).json({ success: false, message: 'Refresh token requerido' });
+    }
+
+    // Check DB first
+    const tokenDb = await prismaGlobal.refreshToken.findUnique({
+      where: { token: refreshToken }
+    });
+
+    if (!tokenDb || tokenDb.revocado || tokenDb.expiresAt < new Date()) {
+      return res.status(403).json({ success: false, message: 'Refresh token inválido, expirado o revocado' });
     }
 
     const payload: any = jwt.verify(refreshToken, REFRESH_SECRET);
@@ -102,10 +127,20 @@ router.post('/refresh', async (req, res) => {
   }
 });
 
-router.post('/logout', (req, res) => {
-  // If we had a database table for refresh tokens, we would invalidate it here.
-  // For now, client just deletes it.
-  res.json({ success: true, message: 'Sesión cerrada' });
+router.post('/logout', async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    if (refreshToken) {
+      await prismaGlobal.refreshToken.update({
+        where: { token: refreshToken },
+        data: { revocado: true }
+      });
+    }
+    res.json({ success: true, message: 'Sesión cerrada' });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({ success: false, message: 'Error interno' });
+  }
 });
 
 export default router;

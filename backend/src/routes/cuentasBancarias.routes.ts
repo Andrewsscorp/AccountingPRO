@@ -3,20 +3,13 @@ import { PrismaClient as PrismaTenant } from '@prisma/client-tenant';
 import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
 
 const prismaGlobal = new PrismaGlobal();
-const getTenantPrisma = async (codigoEmpresa: string) => {
-  const empresa = await prismaGlobal.empresaGlobal.findFirst({
-    where: { codigo_empresa: codigoEmpresa }
-  });
-  if (!empresa) throw new Error('Empresa no encontrada');
-  return new PrismaTenant({ datasources: { db: { url: `file:./${empresa.nombre_bd}.db` } } });
-};
 
 const router = Router();
 
 router.get('/', async (req, res) => {
   const { tenantId } = req as any;
   try {
-    const prisma = await getTenantPrisma(tenantId);
+    const prisma = req.tenantPrisma;
     const cuentas = await prisma.cuentaBancaria.findMany({
       include: {
         banco: true,
@@ -41,7 +34,7 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    const prisma = await getTenantPrisma(tenantId);
+    const prisma = req.tenantPrisma;
     
     // Validar si el número de cuenta ya existe
     const existing = await prisma.cuentaBancaria.findUnique({ where: { numeroCuenta: data.numeroCuenta } });
@@ -81,7 +74,7 @@ router.put('/:id', async (req, res) => {
   const data = req.body;
 
   try {
-    const prisma = await getTenantPrisma(tenantId);
+    const prisma = req.tenantPrisma;
     
     // Check uniqueness if changing account number
     if (data.numeroCuenta) {
@@ -123,7 +116,7 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const prisma = await getTenantPrisma(tenantId);
+    const prisma = req.tenantPrisma;
     await prisma.cuentaBancaria.delete({
       where: { id: Number(id) }
     });

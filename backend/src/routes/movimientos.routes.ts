@@ -6,13 +6,6 @@ import { LedgerQueryService } from '../services/contabilidad/ledger.query';
 const router = express.Router();
 const prismaGlobal = new PrismaGlobal();
 
-const getTenantPrisma = async (codigoEmpresa: string) => {
-  const empresa = await prismaGlobal.empresaGlobal.findFirst({
-    where: { codigo_empresa: codigoEmpresa }
-  });
-  if (!empresa) throw new Error('Empresa no encontrada');
-  return new PrismaTenant({ datasources: { db: { url: `file:./${empresa.nombre_bd}.db` } } });
-};
 
 // GET /ledger (Libro Mayor por cursor)
 router.get('/:tenantId/movimientos/ledger', async (req: any, res: any) => {
@@ -32,7 +25,7 @@ router.get('/:tenantId/movimientos/ledger', async (req: any, res: any) => {
 router.post('/:tenantId/movimientos/search', async (req: any, res: any) => {
   let pTenant: any;
   try {
-    pTenant = await getTenantPrisma(req.params.tenantId);
+    pTenant = req.tenantPrisma;
     
     const { 
       tipoFiltro, // "Documento", "Cuenta", "Tercero", "CentroCosto", "Mixto"
@@ -286,7 +279,7 @@ import { PdfExportService } from '../services/pdf/PdfExportService';
 router.post('/:tenantId/movimientos/export/pdf', async (req: any, res: any) => {
   let pTenant: any;
   try {
-    pTenant = await getTenantPrisma(req.params.tenantId);
+    pTenant = req.tenantPrisma;
     
     const { 
       configuracion, // { paperSize, columnasIds, incluirTotales... }

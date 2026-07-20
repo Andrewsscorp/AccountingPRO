@@ -4,7 +4,12 @@ import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
 import { PrismaClient as PrismaTenant } from '@prisma/client-tenant';
 
 const prismaGlobal = new PrismaGlobal();
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_key_for_dev_only';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error("CRITICAL ERROR: JWT_SECRET not set in environment variables. Failing to start.");
+  process.exit(1);
+}
 
 export const resolveTenant = async (req: any, res: Response, next: NextFunction) => {
   try {
@@ -27,9 +32,9 @@ export const resolveTenant = async (req: any, res: Response, next: NextFunction)
     // 2. Resolve Tenant ID
     const tenantId = req.headers['x-tenant-id'] || req.params.tenantId;
     if (!tenantId) {
-      // Si no se requiere un tenant específico (ej. listado de empresas), podemos dejar pasar si la ruta lo soporta.
-      // Pero 'resolveTenant' normalmente espera un tenant. Devolveremos error 400.
-      return res.status(400).json({ success: false, message: 'Falta identificador de empresa (x-tenant-id)' });
+      // Allow passing through if no tenant is specified, some routes might handle it
+      // (like listing available companies) but we won't set req.tenantPrisma
+      return next();
     }
 
     // 3. Verify user has access to this tenant (Authorization)
