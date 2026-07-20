@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Paper, Text, Group, ThemeIcon, Title, SimpleGrid, UnstyledButton } from '@mantine/core';
-import { IconBuildingBank, IconArrowRight } from '@tabler/icons-react';
+import { IconBuildingBank, IconArrowRight, IconScale, IconReceipt } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import TenantLayout from '../../components/layout/TenantLayout';
 
@@ -8,6 +8,20 @@ export default function TesoreriaDashboard() {
   const navigate = useNavigate();
 
   const modulos = [
+    { 
+      title: 'Conciliación Bancaria', 
+      desc: 'Cuadre y conciliación de extractos', 
+      icon: IconScale, 
+      color: 'teal', 
+      path: '/tesoreria/conciliacion' 
+    },
+    { 
+      title: 'Movimientos Bancarios', 
+      desc: 'Cheques y egresos', 
+      icon: IconReceipt, 
+      color: 'violet', 
+      path: '/tesoreria/movimientos' 
+    },
     { 
       title: 'Crear Cuenta Bancaria', 
       desc: 'Registrar y configurar una nueva cuenta de banco para la empresa y asociar su cuenta contable.', 

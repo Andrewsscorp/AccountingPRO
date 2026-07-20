@@ -11,6 +11,8 @@ import bancosRoutes from './routes/bancos.routes';
 import sucursalesRoutes from './routes/sucursales.routes';
 import cuentasBancariasRoutes from './routes/cuentasBancarias.routes';
 import grupoOperacionesRoutes from './routes/grupoOperaciones.routes';
+import movimientosBancosRoutes from './routes/movimientosBancos.routes';
+import reportesRoutes from './routes/reportes.routes';
 
 const PORT = process.env.PORT || 3000;
 
@@ -28,9 +30,10 @@ app.use('/api/tesoreria/bancos', bancosRoutes);
 app.use('/api/tesoreria/sucursales', sucursalesRoutes);
 app.use('/api/tesoreria/cuentas-bancarias', cuentasBancariasRoutes);
 app.use('/api/tesoreria/grupos-operaciones', grupoOperacionesRoutes);
+app.use('/api/tesoreria/movimientos', movimientosBancosRoutes);
+app.use('/api/reportes', reportesRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor Backend corriendo en http://localhost:${PORT}`);
 });
 // Trigger reload after env update
-

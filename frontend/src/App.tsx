@@ -15,6 +15,8 @@ import AjustesModulo from './pages/Configuracion/Ajustes';
 import DatosEmpresa from './pages/Configuracion/Empresa';
 import CuentasBancarias from './pages/Tesoreria/CuentasBancarias/CuentasBancarias';
 import TesoreriaDashboard from './pages/Tesoreria/TesoreriaDashboard';
+import MovimientosBancos from './pages/Tesoreria/Movimientos/MovimientosBancos';
+import BalancePrueba from './pages/Reportes/BalancePrueba/BalancePrueba';
 
 export default function App() {
   return (
@@ -33,6 +35,8 @@ export default function App() {
         <Route path="/terceros" element={<Terceros />} />
         <Route path="/tesoreria" element={<TesoreriaDashboard />} />
         <Route path="/tesoreria/cuentas-bancarias" element={<CuentasBancarias />} />
+        <Route path="/tesoreria/movimientos" element={<MovimientosBancos />} />
+        <Route path="/reportes/balance" element={<BalancePrueba />} />
         <Route path="/configuracion" element={<Configuracion />} />
         <Route path="/configuracion/ajustes" element={<AjustesModulo />} />
         <Route path="/configuracion/empresa" element={<DatosEmpresa />} />

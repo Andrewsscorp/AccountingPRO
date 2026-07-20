@@ -45,7 +45,7 @@ const modulosContabilidad = [
   { title: 'Centros de Costos', desc: 'Estructura de áreas y proyectos.', icon: IconBuildingStore, color: 'cyan', link: '/contabilidad/centros-costo' },
   { title: 'Comprobantes', desc: 'Registro de asientos y comprobantes contables.', icon: IconReceipt2, color: 'green', link: '/contabilidad/comprobantes' },
   { title: 'Movimientos', desc: 'Explorador de débitos y créditos en detalle.', icon: IconListDetails, color: 'orange', link: '/contabilidad/movimientos' },
-  { title: 'Libros Oficiales', desc: 'Diario, Mayor y Balances, Auxiliares.', icon: IconBook2, color: 'teal' },
+  { title: 'Libros Oficiales', desc: 'Diario, Mayor y Balances, Auxiliares.', icon: IconBook2, color: 'teal', link: '/reportes/balance' },
   { title: 'Cierre Contable', desc: 'Cierre de mes y año, traslado de saldos.', icon: IconLock, color: 'red' },
   { title: 'Parámetros', desc: 'Cuentas de utilidad, cierre y configuraciones base.', icon: IconSettings, color: 'gray' },
   { title: 'Importar', desc: 'Carga masiva de datos contables desde plantillas.', icon: IconFileImport, color: 'pink', link: '/contabilidad/importar' },

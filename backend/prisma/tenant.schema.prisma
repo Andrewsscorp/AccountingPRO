@@ -330,6 +330,8 @@ model Movimiento {
   centroCosto      CentroCosto?    @relation(fields: [centroCostoId], references: [id], onDelete: Restrict)
   cuentaBancariaId Int?
   cuentaBancaria   CuentaBancaria? @relation(fields: [cuentaBancariaId], references: [id], onDelete: SetNull)
+  nroCheque        String?
+  fechaCheque      DateTime?
   descripcion      String?
   debito        Float        @default(0)
   credito       Float        @default(0)
