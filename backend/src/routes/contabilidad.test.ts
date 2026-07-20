@@ -1,3 +1,10 @@
+import { describe, it, expect, jest, beforeEach } from "@jest/globals";
+jest.mock('../middlewares/tenant.middleware', () => ({
+  resolveTenant: (req: any, res: any, next: any) => {
+    req.usuarioId = 1;
+    next();
+  }
+}));
 // @ts-nocheck
 import request from 'supertest';
 import express from 'express';
@@ -10,7 +17,7 @@ const mockCreate = jest.fn();
 
 jest.mock('@prisma/client-global', () => ({
   PrismaClient: jest.fn().mockImplementation(() => ({
-    empresaGlobal: { findFirst: jest.fn().mockResolvedValue({ id: 1, codigo_empresa: 'EMP001', nombre_bd: 'test_db' } as any) }
+    empresaGlobal: { findFirst: jest.fn().mockResolvedValue({ id: 1, codigo_empresa: 'EMP001', nombre_bd: 'test_db' } as never) }
   }))
 }));
 
@@ -46,21 +53,21 @@ describe('Contabilidad Routes - DELETE /:tenantId/plan-cuentas/:id', () => {
 
     mockFindUnique.mockResolvedValue({
       id: 1, codigo: '110505', nombre: 'Caja', activa: true, esSistema: false
-    } as any);
-    mockCount.mockResolvedValue(0 as any);
-    mockDelete.mockResolvedValue({} as any);
-    mockCreate.mockResolvedValue({} as any);
+    } as never);
+    mockCount.mockResolvedValue(0 as never);
+    mockDelete.mockResolvedValue({} as never);
+    mockCreate.mockResolvedValue({} as never);
   });
 
   it('should reject deletion if account does not exist', async () => {
-    mockFindUnique.mockResolvedValueOnce(null as any);
+    mockFindUnique.mockResolvedValueOnce(null as never);
     const res = await request(app).delete('/api/contabilidad/EMP001/plan-cuentas/999');
     expect(res.status).toBe(404);
     expect(res.body.success).toBe(false);
   });
 
   it('should reject deletion if account has child accounts', async () => {
-    mockCount.mockResolvedValueOnce(1 as any);
+    mockCount.mockResolvedValueOnce(1 as never);
     const res = await request(app).delete('/api/contabilidad/EMP001/plan-cuentas/1');
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
@@ -68,14 +75,14 @@ describe('Contabilidad Routes - DELETE /:tenantId/plan-cuentas/:id', () => {
   });
 
   it('should reject deletion if account has movements', async () => {
-    mockCount.mockResolvedValueOnce(0 as any).mockResolvedValueOnce(1 as any);
+    mockCount.mockResolvedValueOnce(0 as never).mockResolvedValueOnce(1 as never);
     const res = await request(app).delete('/api/contabilidad/EMP001/plan-cuentas/1');
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
   });
 
   it('should delete account if no movements and no children', async () => {
-    mockCount.mockResolvedValue(0 as any);
+    mockCount.mockResolvedValue(0 as never);
     const res = await request(app).delete('/api/contabilidad/EMP001/plan-cuentas/1');
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);

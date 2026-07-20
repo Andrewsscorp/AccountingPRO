@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { PrismaClient as PrismaTenant } from '@prisma/client-tenant';
 import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
 import { LedgerService } from '../services/contabilidad/ledger.service';
+import { resolveTenant } from "../middlewares/tenant.middleware";
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -23,6 +24,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 const router = Router();
+router.use(resolveTenant);
 const prismaGlobal = new PrismaGlobal();
 
 
