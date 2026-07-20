@@ -80,7 +80,12 @@ export default function TenantLayout({ children }: { children: React.ReactNode }
   }, [navigate]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/empresas')
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:3000/api/empresas', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(res => res.json())
       .then(data => {
         if (data.success) {

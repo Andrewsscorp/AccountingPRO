@@ -6,6 +6,7 @@ import contabilidadRoutes from './routes/contabilidad.routes';
 import firmantesRoutes from './routes/firmantes.routes';
 import configuracionEmpresaRoutes from './routes/configuracionEmpresa.routes';
 import importacionesRoutes from './routes/importaciones.routes';
+import authRoutes from './routes/auth.routes';
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Rutas
+app.use('/api/auth', authRoutes);
 app.use('/api/empresas', empresasRoutes);
 app.use('/api/contabilidad', contabilidadRoutes);
 import docLibreriaRoutes from './routes/docLibreria.routes';

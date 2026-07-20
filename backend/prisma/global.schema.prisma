@@ -17,6 +17,8 @@ model EmpresaGlobal {
   nombre_bd      String
   estado         String   @default("ACTIVO")
   fecha_creacion DateTime @default(now())
+
+  usuarios       UsuarioEmpresa[]
 }
 
 model Ciiu {
@@ -25,4 +27,29 @@ model Ciiu {
   descripcion String
   tarifaIca   Float?   // Tarifa ICA referencial (e.g. 9.66)
   createdAt   DateTime @default(now())
+}
+
+model Usuario {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  nombre       String
+  rol          String   @default("USER") // Rol global
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  empresas     UsuarioEmpresa[]
+}
+
+model UsuarioEmpresa {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  empresaId Int
+  rol       String   @default("CONTADOR") // Rol en la empresa (ej. ADMIN, CONTADOR, LECTOR)
+  createdAt DateTime @default(now())
+
+  usuario   Usuario       @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  empresa   EmpresaGlobal @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, empresaId])
 }
