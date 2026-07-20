@@ -1,0 +1,97 @@
+
+> backend@1.0.0 dev
+> tsx watch src/server.ts
+
+Servidor Backend corriendo en http://localhost:3000
+Error al obtener detalles del tenant tenant_EMP000001.db: PrismaClientKnownRequestError:
+Invalid `pTenant.configuracionEmpresa.findFirst()` invocation in
+/app/backend/src/routes/empresas.routes.ts:196:57
+
+  193 try {
+  194   const tenantDbUrl = `file:./${emp.nombre_bd}.db`;
+  195   const pTenant = new PrismaTenant({ datasources: { db: { url: tenantDbUrl } } });
+→ 196   const conf = await pTenant.configuracionEmpresa.findFirst(
+The table `main.ConfiguracionEmpresa` does not exist in the current database.
+    at $n.handleRequestError (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:121:7315)
+    at $n.handleAndLogRequestError (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:121:6623)
+    at $n.request (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:121:6307)
+    at async l (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:130:9633)
+    at async <anonymous> (/app/backend/src/routes/empresas.routes.ts:196:22)
+    at async Promise.all (index 0)
+    at async <anonymous> (/app/backend/src/routes/empresas.routes.ts:192:33) {
+  code: 'P2021',
+  clientVersion: '5.22.0',
+  meta: {
+    modelName: 'ConfiguracionEmpresa',
+    table: 'main.ConfiguracionEmpresa'
+  }
+}
+Error al obtener detalles del tenant tenant_EMP000001.db: PrismaClientKnownRequestError:
+Invalid `pTenant.configuracionEmpresa.findFirst()` invocation in
+/app/backend/src/routes/empresas.routes.ts:196:57
+
+  193 try {
+  194   const tenantDbUrl = `file:./${emp.nombre_bd}.db`;
+  195   const pTenant = new PrismaTenant({ datasources: { db: { url: tenantDbUrl } } });
+→ 196   const conf = await pTenant.configuracionEmpresa.findFirst(
+The table `main.ConfiguracionEmpresa` does not exist in the current database.
+    at $n.handleRequestError (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:121:7315)
+    at $n.handleAndLogRequestError (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:121:6623)
+    at $n.request (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:121:6307)
+    at async l (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:130:9633)
+    at async <anonymous> (/app/backend/src/routes/empresas.routes.ts:196:22)
+    at async Promise.all (index 0)
+    at async <anonymous> (/app/backend/src/routes/empresas.routes.ts:192:33) {
+  code: 'P2021',
+  clientVersion: '5.22.0',
+  meta: {
+    modelName: 'ConfiguracionEmpresa',
+    table: 'main.ConfiguracionEmpresa'
+  }
+}
+Error al obtener detalles del tenant tenant_EMP000001.db: PrismaClientKnownRequestError:
+Invalid `pTenant.configuracionEmpresa.findFirst()` invocation in
+/app/backend/src/routes/empresas.routes.ts:196:57
+
+  193 try {
+  194   const tenantDbUrl = `file:./${emp.nombre_bd}.db`;
+  195   const pTenant = new PrismaTenant({ datasources: { db: { url: tenantDbUrl } } });
+→ 196   const conf = await pTenant.configuracionEmpresa.findFirst(
+The table `main.ConfiguracionEmpresa` does not exist in the current database.
+    at $n.handleRequestError (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:121:7315)
+    at $n.handleAndLogRequestError (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:121:6623)
+    at $n.request (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:121:6307)
+    at async l (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:130:9633)
+    at async <anonymous> (/app/backend/src/routes/empresas.routes.ts:196:22)
+    at async Promise.all (index 0)
+    at async <anonymous> (/app/backend/src/routes/empresas.routes.ts:192:33) {
+  code: 'P2021',
+  clientVersion: '5.22.0',
+  meta: {
+    modelName: 'ConfiguracionEmpresa',
+    table: 'main.ConfiguracionEmpresa'
+  }
+}
+Error al obtener detalles del tenant tenant_EMP000001.db: PrismaClientKnownRequestError:
+Invalid `pTenant.configuracionEmpresa.findFirst()` invocation in
+/app/backend/src/routes/empresas.routes.ts:196:57
+
+  193 try {
+  194   const tenantDbUrl = `file:./${emp.nombre_bd}.db`;
+  195   const pTenant = new PrismaTenant({ datasources: { db: { url: tenantDbUrl } } });
+→ 196   const conf = await pTenant.configuracionEmpresa.findFirst(
+The table `main.ConfiguracionEmpresa` does not exist in the current database.
+    at $n.handleRequestError (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:121:7315)
+    at $n.handleAndLogRequestError (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:121:6623)
+    at $n.request (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:121:6307)
+    at async l (/app/backend/node_modules/@prisma/client-tenant/runtime/library.js:130:9633)
+    at async <anonymous> (/app/backend/src/routes/empresas.routes.ts:196:22)
+    at async Promise.all (index 0)
+    at async <anonymous> (/app/backend/src/routes/empresas.routes.ts:192:33) {
+  code: 'P2021',
+  clientVersion: '5.22.0',
+  meta: {
+    modelName: 'ConfiguracionEmpresa',
+    table: 'main.ConfiguracionEmpresa'
+  }
+}
