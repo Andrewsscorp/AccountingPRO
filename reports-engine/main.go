@@ -9,11 +9,14 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
 	_ "modernc.org/sqlite"
 	"github.com/rs/cors"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
 
 type Cuenta struct {
@@ -30,11 +33,18 @@ type Cuenta struct {
 }
 
 func main() {
+	godotenv.Load("../backend/.env")
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/fast-balance", handleFastBalance)
 
+	allowedOrigin := os.Getenv("FRONTEND_URL")
+	if allowedOrigin == "" {
+		allowedOrigin = "http://localhost:5173"
+	}
+
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"},
+		AllowedOrigins: []string{allowedOrigin},
 		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders: []string{"*"},
 	})
@@ -46,6 +56,30 @@ func main() {
 }
 
 func handleFastBalance(w http.ResponseWriter, r *http.Request) {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+		http.Error(w, `{"success":false,"message":"Autenticación requerida"}`, http.StatusUnauthorized)
+		return
+	}
+
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		jwtSecret = "super_secret_jwt_key_for_dev_only"
+	}
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Método de firma inesperado: %v", token.Header["alg"])
+		}
+		return []byte(jwtSecret), nil
+	})
+
+	if err != nil || !token.Valid {
+		http.Error(w, `{"success":false,"message":"Token inválido o expirado"}`, http.StatusUnauthorized)
+		return
+	}
+
 	tenantID := r.Header.Get("x-tenant-id")
 	if tenantID == "" {
 		http.Error(w, `{"success":false,"message":"Falta x-tenant-id"}`, http.StatusBadRequest)

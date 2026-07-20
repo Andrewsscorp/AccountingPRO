@@ -69,7 +69,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Just fetch to show the current active company data in the local stats
-    fetch('http://localhost:3000/api/empresas')
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:3000/api/empresas', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(res => res.json())
       .then(data => {
         if (data.success) {

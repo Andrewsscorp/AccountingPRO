@@ -11,13 +11,39 @@ import {
 } from '@mantine/core';
 import { IconChartArcs, IconUser, IconLock } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function Login() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleLogin = () => {
-    // Para efectos de prototipo, simplemente redirigimos al dashboard
-    navigate('/dashboard');
+  const handleLogin = async () => {
+    setError('');
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        if (data.user) {
+           localStorage.setItem('user', JSON.stringify(data.user));
+        }
+        navigate('/dashboard');
+      } else {
+        setError(data.message || 'Error de autenticación');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Error conectando con el servidor');
+    }
   };
 
   return (
@@ -32,11 +58,19 @@ export default function Login() {
           Sistema Contable y Financiero
         </Text>
 
+        {error && (
+          <Text c="red" size="sm" ta="center" mb="sm">
+            {error}
+          </Text>
+        )}
+
         <TextInput
           label="Usuario"
-          placeholder="Administrador"
+          placeholder="admin@accountingpro.com"
           rightSection={<IconUser size={16} stroke={1.5} color="gray" />}
           mb="md"
+          value={email}
+          onChange={(e) => setEmail(e.currentTarget.value)}
           styles={{ label: { marginBottom: 5, fontWeight: 500 } }}
         />
 
@@ -45,6 +79,8 @@ export default function Login() {
           placeholder="********"
           rightSection={<IconLock size={16} stroke={1.5} color="gray" />}
           mb="xl"
+          value={password}
+          onChange={(e) => setPassword(e.currentTarget.value)}
           styles={{ label: { marginBottom: 5, fontWeight: 500 } }}
         />
 
