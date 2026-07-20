@@ -65,7 +65,9 @@ func handleFastBalance(w http.ResponseWriter, r *http.Request) {
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
-		jwtSecret = "super_secret_jwt_key_for_dev_only"
+		log.Println("CRITICAL ERROR: JWT_SECRET not set")
+		http.Error(w, `{"success":false,"message":"Error de configuración del servidor"}`, http.StatusInternalServerError)
+		return
 	}
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -85,6 +87,21 @@ func handleFastBalance(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"success":false,"message":"Falta x-tenant-id"}`, http.StatusBadRequest)
 		return
 	}
+
+	// Wait, the JWT validation from frontend requires mapping user to companies.
+	// The middleware handles this via DB for Node, here we can check the JWT payload 'empresas' array.
+
+	// Ensure the tenant ID they are requesting is actually inside the claims
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		http.Error(w, `{"success":false,"message":"Token no tiene claims válidos"}`, http.StatusForbidden)
+		return
+	}
+
+	// However, we only have `empresaId` (integer) in the JWT, not the `codigo_empresa` string (e.g. EMP000001).
+	// But let's check it against the DB in go anyway since the DB is read-only here.
+	// Oh wait, `handleFastBalance` actually looks up the empresa by `codigo_empresa` later.
+	// We can do it right there!
 
 	strDesde := r.URL.Query().Get("fechaDesde")
 	strHasta := r.URL.Query().Get("fechaHasta")
@@ -121,11 +138,29 @@ func handleFastBalance(w http.ResponseWriter, r *http.Request) {
 	}
 	defer globalDb.Close()
 
+	var empresaId int
 	var nombreBd string
-	err = globalDb.QueryRow("SELECT nombre_bd FROM EmpresaGlobal WHERE codigo_empresa = ?", tenantID).Scan(&nombreBd)
+	err = globalDb.QueryRow("SELECT id, nombre_bd FROM EmpresaGlobal WHERE codigo_empresa = ?", tenantID).Scan(&empresaId, &nombreBd)
 	if err != nil {
 		fmt.Printf("Error searching tenant %s in global DB: %v\n", tenantID, err)
 		http.Error(w, `{"success":false,"message":"Tenant no encontrado en DB global"}`, http.StatusNotFound)
+		return
+	}
+
+	// Now check if user has access based on their JWT claims
+	// (which usually has "empresas": [1,2,3] for empresaIds)
+	hasAccess := false
+	if empresasClaim, ok := claims["empresas"].([]interface{}); ok {
+		for _, e := range empresasClaim {
+			if idFloat, ok := e.(float64); ok && int(idFloat) == empresaId {
+				hasAccess = true
+				break
+			}
+		}
+	}
+
+	if !hasAccess {
+		http.Error(w, `{"success":false,"message":"No tiene permiso para acceder a esta empresa"}`, http.StatusForbidden)
 		return
 	}
 

@@ -39,6 +39,7 @@ model Usuario {
   createdAt    DateTime @default(now())
 
   empresas     UsuarioEmpresa[]
+  refreshTokens RefreshToken[]
 }
 
 model UsuarioEmpresa {
@@ -52,4 +53,15 @@ model UsuarioEmpresa {
   empresa   EmpresaGlobal @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 
   @@unique([usuarioId, empresaId])
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+  revocado  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  usuario   Usuario  @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

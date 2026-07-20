@@ -1,6 +1,7 @@
-import { afterAll, describe, it, expect } from '@jest/globals';
+// @ts-nocheck
 import app from '../app';
 import { disconnectEmpresasPrisma } from './empresas.routes';
+import jwt from 'jsonwebtoken';
 
 // Mocking Prisma so tests dont fail looking for actual DBs
 jest.mock('@prisma/client-global', () => {
@@ -8,7 +9,7 @@ jest.mock('@prisma/client-global', () => {
     PrismaClient: jest.fn().mockImplementation(() => {
       return {
         empresaGlobal: {
-          findMany: jest.fn().mockResolvedValue([{ id: 1, codigo_empresa: 'EMP001', nombre_bd: 'test_db' }]),
+          findMany: jest.fn().mockReturnValue(Promise.resolve([{ id: 1, codigo_empresa: 'EMP001', nombre_bd: 'test_db' }]),
         },
         $disconnect: jest.fn(),
       };
@@ -21,7 +22,7 @@ jest.mock('@prisma/client-tenant', () => {
     PrismaClient: jest.fn().mockImplementation(() => {
       return {
         configuracionEmpresa: {
-          findFirst: jest.fn().mockResolvedValue(null)
+          findFirst: jest.fn().mockReturnValue(Promise.resolve(null)
         },
         $disconnect: jest.fn(),
       };
@@ -43,9 +44,10 @@ describe('Empresas API', () => {
         throw new Error('No se pudo iniciar el servidor de prueba');
       }
 
-      // Add a dummy token since we secured the layout using fetch
+      const validToken = jwt.sign({ userId: 1 }, process.env.JWT_SECRET || 'super_secret_jwt_key_for_dev_only');
+
       const res = await fetch(`http://127.0.0.1:${address.port}/api/empresas`, {
-        headers: { 'Authorization': 'Bearer test' }
+        headers: { 'Authorization': `Bearer ${validToken}` }
       });
       const body = await res.json();
 

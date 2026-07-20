@@ -5,20 +5,13 @@ import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
 const router = Router();
 const prismaGlobal = new PrismaGlobal();
 
-const getTenantPrisma = async (codigoEmpresa: string) => {
-  const empresa = await prismaGlobal.empresaGlobal.findFirst({
-    where: { codigo_empresa: codigoEmpresa }
-  });
-  if (!empresa) throw new Error('Empresa no encontrada');
-  return new PrismaTenant({ datasources: { db: { url: `file:./${empresa.nombre_bd}.db` } } });
-};
 
 // GET /api/contabilidad/:tenantId/doc-libreria
 router.get('/:tenantId/doc-libreria', async (req: Request, res: Response) => {
   let pTenant;
   try {
     const { tenantId } = req.params;
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     
     const libreria = await pTenant.docLibreria.findMany({
       include: {
@@ -56,7 +49,7 @@ router.post('/:tenantId/doc-libreria', async (req: Request, res: Response) => {
       throw new Error("El nombre de la plantilla es obligatorio.");
     }
 
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
 
     const docLibreria = await pTenant.docLibreria.create({
       data: {
@@ -97,7 +90,7 @@ router.delete('/:tenantId/doc-libreria/:id', async (req: Request, res: Response)
   let pTenant;
   try {
     const { tenantId, id } = req.params;
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     await pTenant.docLibreria.delete({ where: { id: Number(id) } });
     res.json({ success: true, message: "Plantilla eliminada correctamente" });
   } catch (error: any) {

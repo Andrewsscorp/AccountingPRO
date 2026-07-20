@@ -25,13 +25,6 @@ const upload = multer({ storage });
 const router = Router();
 const prismaGlobal = new PrismaGlobal();
 
-const getTenantPrisma = async (codigoEmpresa: string) => {
-  const empresa = await prismaGlobal.empresaGlobal.findFirst({
-    where: { codigo_empresa: codigoEmpresa }
-  });
-  if (!empresa) throw new Error('Empresa no encontrada');
-  return new PrismaTenant({ datasources: { db: { url: `file:./${empresa.nombre_bd}.db` } } });
-};
 
 // GET /api/contabilidad/:tenantId/comprobantes
 router.get('/:tenantId/comprobantes', async (req: any, res: any) => {
@@ -55,7 +48,7 @@ router.post('/:tenantId/comprobantes', upload.array('soportes', 10), async (req:
   let pTenant;
 
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
 
     const empresaGlobal = await prismaGlobal.empresaGlobal.findFirst({
       where: { codigo_empresa: tenantId }

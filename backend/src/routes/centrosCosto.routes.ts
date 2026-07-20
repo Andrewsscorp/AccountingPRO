@@ -5,13 +5,6 @@ import { PrismaClient as PrismaGlobal } from '@prisma/client-global';
 const router = express.Router();
 const prismaGlobal = new PrismaGlobal();
 
-const getTenantPrisma = async (codigoEmpresa: string) => {
-  const empresa = await prismaGlobal.empresaGlobal.findFirst({
-    where: { codigo_empresa: codigoEmpresa }
-  });
-  if (!empresa) throw new Error('Empresa no encontrada');
-  return new PrismaTenant({ datasources: { db: { url: `file:./${empresa.nombre_bd}.db` } } });
-};
 
 // Helpers
 function buildTree(items: any[], id: number | null = null): any[] {
@@ -24,7 +17,7 @@ function buildTree(items: any[], id: number | null = null): any[] {
 router.get('/:tenantId/centros-costo/estructura', async (req: any, res: any) => {
   let pTenant: any;
   try {
-    pTenant = await getTenantPrisma(req.params.tenantId);
+    pTenant = req.tenantPrisma;
     let config = await pTenant.configuracionCentrosCosto.findFirst();
     if (!config) {
       config = {
@@ -69,7 +62,7 @@ router.post('/:tenantId/centros-costo/estructura', async (req: any, res: any) =>
 
   let pTenant: any;
   try {
-    pTenant = await getTenantPrisma(req.params.tenantId);
+    pTenant = req.tenantPrisma;
     const movCount = await pTenant.movimientoCentroCosto.count();
     if (movCount > 0) {
       return res.status(400).json({ success: false, message: 'La estructura no puede modificarse porque existen movimientos asociados a centros de costos.' });
@@ -105,7 +98,7 @@ router.post('/:tenantId/centros-costo/estructura', async (req: any, res: any) =>
 router.get('/:tenantId/centros-costo/arbol', async (req: any, res: any) => {
   let pTenant: any;
   try {
-    pTenant = await getTenantPrisma(req.params.tenantId);
+    pTenant = req.tenantPrisma;
     const centros = await pTenant.centroCosto.findMany({
       orderBy: { codigo: 'asc' }
     });
@@ -124,7 +117,7 @@ router.get('/:tenantId/centros-costo/arbol', async (req: any, res: any) => {
 router.get('/:tenantId/centros-costo', async (req: any, res: any) => {
   let pTenant: any;
   try {
-    pTenant = await getTenantPrisma(req.params.tenantId);
+    pTenant = req.tenantPrisma;
     const centros = await pTenant.centroCosto.findMany({
       include: {
         padre: { select: { codigo: true, nombre: true } },
@@ -146,7 +139,7 @@ router.get('/:tenantId/centros-costo/:id/validaciones', async (req: any, res: an
   let pTenant: any;
   try {
     const { id } = req.params;
-    pTenant = await getTenantPrisma(req.params.tenantId);
+    pTenant = req.tenantPrisma;
 
     const centro = await pTenant.centroCosto.findUnique({
       where: { id: Number(id) },
@@ -179,7 +172,7 @@ router.post('/:tenantId/centros-costo', async (req: any, res: any) => {
   let pTenant: any;
   try {
     const { codigo, nombre, padreId, descripcion, activo } = req.body;
-    pTenant = await getTenantPrisma(req.params.tenantId);
+    pTenant = req.tenantPrisma;
 
     if (!codigo || !nombre) {
       return res.status(400).json({ success: false, message: 'Código y nombre son obligatorios.' });
@@ -246,7 +239,7 @@ router.put('/:tenantId/centros-costo/:id', async (req: any, res: any) => {
   try {
     const { id } = req.params;
     const { nombre, descripcion, activo } = req.body;
-    pTenant = await getTenantPrisma(req.params.tenantId);
+    pTenant = req.tenantPrisma;
 
     const existing = await pTenant.centroCosto.findUnique({ 
       where: { id: Number(id) },
@@ -302,7 +295,7 @@ router.delete('/:tenantId/centros-costo/:id', async (req: any, res: any) => {
   try {
     const { id } = req.params;
     const action = req.body.action || 'delete';
-    pTenant = await getTenantPrisma(req.params.tenantId);
+    pTenant = req.tenantPrisma;
 
     const existing = await pTenant.centroCosto.findUnique({ 
       where: { id: Number(id) },

@@ -11,30 +11,13 @@ router.get('/health', (req, res) => {
 });
 
 // Helper to get tenant prisma client
-const getTenantPrisma = async (codigoEmpresa: string) => {
-  const empresa = await prismaGlobal.empresaGlobal.findFirst({
-    where: { codigo_empresa: codigoEmpresa }
-  });
-
-  if (!empresa) {
-    throw new Error('Empresa no encontrada');
-  }
-
-  return new PrismaTenant({
-    datasources: {
-      db: {
-        url: `file:./${empresa.nombre_bd}.db`
-      }
-    }
-  });
-};
 
 // Obtener Plan de Cuentas (Lista Completa)
 router.get('/:tenantId/plan-cuentas', async (req, res) => {
   const { tenantId } = req.params;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     const cuentas = await pTenant.planCuenta.findMany({
       orderBy: { codigo: 'asc' }
     });
@@ -53,7 +36,7 @@ router.post('/:tenantId/plan-cuentas', async (req, res) => {
   const { codigo, nombre, cuentaPadreId, movimiento, nivel } = req.body;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     
     // Obtener la cuenta padre
     const padre = await pTenant.planCuenta.findUnique({
@@ -112,7 +95,7 @@ router.put('/:tenantId/plan-cuentas/:id', async (req, res) => {
   const { nombre, movimiento, requiereTercero, requiereCentroCosto, activa } = req.body;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     
     const cuentaOriginal = await pTenant.planCuenta.findUnique({
       where: { id: Number(id) }
@@ -196,7 +179,7 @@ router.get('/:tenantId/plan-cuentas/:id/dependencias', async (req, res) => {
   const { tenantId, id } = req.params;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     
     const cuenta = await pTenant.planCuenta.findUnique({
       where: { id: Number(id) }
@@ -228,7 +211,7 @@ router.get('/:tenantId/plan-cuentas/:id/validar-eliminacion', async (req, res) =
   const { tenantId, id } = req.params;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     const cuenta = await pTenant.planCuenta.findUnique({ where: { id: Number(id) } });
     if (!cuenta) return res.status(404).json({ success: false, message: 'Cuenta no encontrada' });
 
@@ -268,7 +251,7 @@ router.delete('/:tenantId/plan-cuentas/:id', async (req, res) => {
   const { tenantId, id } = req.params;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     const cuenta = await pTenant.planCuenta.findUnique({ where: { id: Number(id) } });
     if (!cuenta) return res.status(404).json({ success: false, message: 'Cuenta no encontrada' });
 
@@ -324,7 +307,7 @@ router.put('/:tenantId/plan-cuentas/:codigo/toggle-flag', async (req, res) => {
 
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     
     // Actualiza en cascada: la cuenta actual y todas las subcuentas/auxiliares que empiecen por este cÃ³digo
     await pTenant.planCuenta.updateMany({
@@ -357,7 +340,7 @@ router.get('/:tenantId/estructura-puc', async (req, res) => {
   const { tenantId } = req.params;
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
     
     // Obtener la configuracion
     let config = await pTenant.configuracionPlanCuentas.findFirst();
@@ -410,7 +393,7 @@ router.post('/:tenantId/estructura-puc', async (req, res) => {
 
   let pTenant;
   try {
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
 
     // Verificar si hay movimientos
     const movCount = await pTenant.movimiento.count();
@@ -474,7 +457,7 @@ router.post('/:tenantId/movimientos/export/pdf', async (req, res) => {
     const { tenantId } = req.params;
     const { configuracion, filtros, dataset } = req.body;
 
-    pTenant = await getTenantPrisma(tenantId);
+    pTenant = req.tenantPrisma;
 
     // â”€â”€ Obtener datos de la empresa para encabezado â”€â”€
     const empresa = await pTenant.configuracionEmpresa.findFirst();
